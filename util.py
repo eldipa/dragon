@@ -1,5 +1,18 @@
 
 def first(aGrammar, symbols):
+   '''Finds the 'first' set of terminals that there are derived from 'symbols'.
+         
+      - If symbols are 'axxx', where 'a' is a terminal, then, the first of symbols is 'a'.
+      - If symbols are 'Axxx', where 'A' is a nonterminal and it don't derive in a empty
+      string, then, the 'first' of symbols is the 'first of A'.
+      - If symbols are 'ABCx', where 'A' is a nonterminal and it derives in a empty
+      string, then, the 'first' of symbols is the 'first of A' union the 'first of B'. If 
+      B derives in a empty string too, then, append the 'first of C' and so on. If there 
+      aren't more symbols in 'symbols', add the EMPTY terminal to set 'first of 'symbols'.
+
+      This algorithm works for left and right recursive functions.
+      '''
+      
    symbol_derive_empty = set()
    first_set = set()
    previous_first_set = set()
