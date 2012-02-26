@@ -174,7 +174,7 @@ class FunctionalTestFirst(unittest.TestCase):
       self.assertTrue('id' in expected)
       self.assertTrue('(' in expected)
    
-   def XXtest_right_recursive_epsilon(self):
+   def test_right_recursive_epsilon(self):
       expected = first(self.right_recursive_epsilon, ['T'])
       self.assertTrue(len(expected) == 3)
       self.assertTrue('id' in expected)
@@ -182,9 +182,11 @@ class FunctionalTestFirst(unittest.TestCase):
       self.assertTrue(self.right_recursive_epsilon.EMPTY in expected)
       
       expected = first(self.right_recursive_epsilon, ['E'])
-      self.assertTrue(len(expected) == 3)
+      self.assertTrue(len(expected) == 5)
       self.assertTrue('id' in expected)
       self.assertTrue('(' in expected)
+      self.assertTrue('+' in expected)
+      self.assertTrue('-' in expected)
       self.assertTrue(self.right_recursive_epsilon.EMPTY in expected)
 
 if __name__ == '__main__':
