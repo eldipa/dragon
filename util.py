@@ -2,11 +2,17 @@
 def first(aGrammar, symbols):
    symbol_derive_empty = set()
    first_set = set()
+   previous_first_set = set()
 
-   previous_len = -1
-   while previous_len < len(first_set):
-      previous_len = len(first_set)
+   previous_len_symbol_derive_empty = -1
+   while len(previous_first_set) < len(first_set.union(previous_first_set)) or \
+         previous_len_symbol_derive_empty < len(symbol_derive_empty):
+
+      previous_first_set = first_set.union(previous_first_set)
+      previous_len_symbol_derive_empty = len(symbol_derive_empty)
+
       stack_of_rules = [[list(symbols)]]
+      first_set = set()
       seen = set()
       while True:
          rules = stack_of_rules[-1]
@@ -46,6 +52,8 @@ def first(aGrammar, symbols):
          else:
             if s in symbol_derive_empty:
                del stack_of_rules[-1][0][0]
+               if not stack_of_rules[-1][0]:
+                  first_set.add(aGrammar.EMPTY)
             else:
                del stack_of_rules[-1][0]
 
