@@ -10,8 +10,11 @@ def first(aGrammar, symbols):
       if not rules:
          del stack_of_rules[-1]
          if aGrammar.EMPTY in first_set:
-            if stack_of_rules and stack_of_rules[-1][0]:
+            if stack_of_rules and len(stack_of_rules[-1][0]) > 1:
                first_set.remove(aGrammar.EMPTY)
+               symbol_derive_empty.add(stack_of_rules[-1][0][0])
+               del stack_of_rules[-1][0][0]
+
 
             if not stack_of_rules:
                break
@@ -34,9 +37,11 @@ def first(aGrammar, symbols):
          del stack_of_rules[-1][0]
       elif s not in seen:
          seen.add(s)
-         del stack_of_rules[-1][0][0]
          stack_of_rules.append([list(rule) for rule in aGrammar[s]])
       else:
-         del stack_of_rules[-1][0][0]
+         if s in symbol_derive_empty:
+            del stack_of_rules[-1][0][0]
+         else:
+            del stack_of_rules[-1][0]
 
    return frozenset(first_set)
