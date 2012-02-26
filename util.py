@@ -12,6 +12,8 @@ def first(aGrammar, symbols):
          if aGrammar.EMPTY in first_set:
             if stack_of_rules and len(stack_of_rules[-1][0]) > 1:
                first_set.remove(aGrammar.EMPTY)
+            
+            if stack_of_rules and stack_of_rules[-1][0]:
                symbol_derive_empty.add(stack_of_rules[-1][0][0])
                del stack_of_rules[-1][0][0]
 

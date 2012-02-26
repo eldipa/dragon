@@ -52,6 +52,34 @@ class FunctionalTestFirst(unittest.TestCase):
       self.left_recursive.add_rule('T', ['id'])
       self.left_recursive.add_rule('T', ['(', 'E', ')'])
 
+      self.left_recursive_epsilon = Grammar('E', ('+', '-', 'id', '(', ')'))
+
+      self.left_recursive_epsilon.add_rule('E', ['E', '+', 'T'])
+      self.left_recursive_epsilon.add_rule('E', ['E', '-', 'T'])
+      self.left_recursive_epsilon.add_rule('E', ['T'])
+
+      self.left_recursive_epsilon.add_rule('T', ['id'])
+      self.left_recursive_epsilon.add_rule('T', ['(', 'E', ')'])
+      self.left_recursive_epsilon.add_empty('T')
+      
+      self.right_recursive = Grammar('E', ('+', '-', 'id', '(', ')'))
+
+      self.right_recursive.add_rule('E', ['T', '+', 'E'])
+      self.right_recursive.add_rule('E', ['T', '-', 'E'])
+      self.right_recursive.add_rule('E', ['T'])
+
+      self.right_recursive.add_rule('T', ['id'])
+      self.right_recursive.add_rule('T', ['(', 'E', ')'])
+      
+      self.right_recursive_epsilon = Grammar('E', ('+', '-', 'id', '(', ')'))
+
+      self.right_recursive_epsilon.add_rule('E', ['T', '+', 'E'])
+      self.right_recursive_epsilon.add_rule('E', ['T', '-', 'E'])
+      self.right_recursive_epsilon.add_rule('E', ['T'])
+
+      self.right_recursive_epsilon.add_rule('T', ['id'])
+      self.right_recursive_epsilon.add_rule('T', ['(', 'E', ')'])
+      self.right_recursive_epsilon.add_empty('T')
 
    def test_simple(self):
       expected = first(self.simple, ['A'])
@@ -119,6 +147,45 @@ class FunctionalTestFirst(unittest.TestCase):
       self.assertTrue(len(expected) == 2)
       self.assertTrue('id' in expected)
       self.assertTrue('(' in expected)
+   
+   def test_left_recursive_epsilon(self):
+      expected = first(self.left_recursive_epsilon, ['T'])
+      self.assertTrue(len(expected) == 3)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+      self.assertTrue(self.left_recursive_epsilon.EMPTY in expected)
+      
+      expected = first(self.left_recursive_epsilon, ['E'])
+      self.assertTrue(len(expected) == 5)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+      self.assertTrue('+' in expected)
+      self.assertTrue('-' in expected)
+      self.assertTrue(self.left_recursive_epsilon.EMPTY in expected)
+   
+   def test_right_recursive(self):
+      expected = first(self.right_recursive, ['T'])
+      self.assertTrue(len(expected) == 2)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+      
+      expected = first(self.right_recursive, ['E'])
+      self.assertTrue(len(expected) == 2)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+   
+   def XXtest_right_recursive_epsilon(self):
+      expected = first(self.right_recursive_epsilon, ['T'])
+      self.assertTrue(len(expected) == 3)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+      self.assertTrue(self.right_recursive_epsilon.EMPTY in expected)
+      
+      expected = first(self.right_recursive_epsilon, ['E'])
+      self.assertTrue(len(expected) == 3)
+      self.assertTrue('id' in expected)
+      self.assertTrue('(' in expected)
+      self.assertTrue(self.right_recursive_epsilon.EMPTY in expected)
 
 if __name__ == '__main__':
    unittest.main()
