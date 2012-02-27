@@ -41,6 +41,9 @@ class GrammarBuilder:
       assert not self.is_augment()
       self.add_rule(GrammarBuilder.START, (symbol_start, GrammarBuilder.EOF), semantic_action)
 
+   def start_symbol(self):
+      assert self.is_augment()
+      return self[self.START][0][0]
    
    def __getitem__(self, symbol):
       return self._productions[symbol] if symbol in self._productions else None
@@ -59,3 +62,12 @@ class GrammarBuilder:
 
    def is_augment(self):
       return GrammarBuilder.START in self._productions
+
+   def is_start_symbol(self, symbol):
+      return symbol == self.start_symbol()
+   
+   def is_augmented_start_symbol(self, symbol):
+      return symbol == self.START
+
+   def iter_nonterminals(self):
+      return iter(self._productions.keys())

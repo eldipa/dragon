@@ -71,3 +71,43 @@ def first(aGrammar, symbols):
                del stack_of_rules[-1][0]
 
    return frozenset(first_set)
+
+
+def follow(aGrammar, symbol, seen = None):
+   '''Return the set of terminal that 'follow' the nonterminal symbol 'symbol'.
+      
+      Let be X the nonterminal symbol.
+      If A -> aX, the set 'follow of A' is in 'follow of X'
+      If A -> aXB, the set 'first of B' is in 'follow of X' and if the empty terminal
+      is in 'first of B', then the follow of A is in follow of X too.
+      If X is the 'start symbol', add the terminal 'End Of File' to the 'follow of X'.
+
+      Precondition: the grammar must be a augment grammar.
+      '''
+
+   target = symbol
+
+   follow_set = set()
+   seen = seen if seen else set()
+   seen.add(symbol)
+   if aGrammar.is_start_symbol(target):
+      follow_set.add(aGrammar.EOF)
+
+   for s in aGrammar.iter_nonterminals():
+      if not aGrammar.is_augmented_start_symbol(s):
+         for rule in aGrammar[s]:
+            if target in rule:
+               tail = rule[rule.index(target) + 1: ]
+               
+               terminals = ()
+               if tail:
+                  terminals = first(aGrammar, tail)
+      
+               more_terminals = ()
+               if (not tail or aGrammar.EMPTY in terminals) and s not in seen:
+                  more_terminals = follow(aGrammar, s, seen)
+
+               follow_set.update(more_terminals)
+               follow_set.update(set(terminals) - set([aGrammar.EMPTY]))
+   
+   return frozenset(follow_set)
