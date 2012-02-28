@@ -7,7 +7,7 @@ if __name__ == '__main__':
    else:
       patterns = ['test*.py', 'ft_*.py', 'it_*.py', 'rt_*.py']
    
-   start_dir_tests = '.'
+   start_dir_tests = './tests'
    loader = TestLoader()
    suite = TestSuite([loader.discover(start_dir_tests, pattern) for pattern in patterns])
 
