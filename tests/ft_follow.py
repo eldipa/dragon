@@ -1,5 +1,5 @@
 import unittest
-from grammar import GrammarBuilder as Grammar
+from grammar import Grammar
 from util import follow
 
 class FunctionalTestFollow(unittest.TestCase):
