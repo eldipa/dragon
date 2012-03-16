@@ -80,6 +80,15 @@ class FunctionalTestFollow(unittest.TestCase):
       self.right_recursive_epsilon.add_rule('T', ['id'])
       self.right_recursive_epsilon.add_rule('T', ['(', 'E', ')'])
       self.right_recursive_epsilon.add_empty('T')
+      
+      self.lrvalue_with_actions = Grammar('S', ('=', '*', '(', ')', 'id'))
+
+      self.lrvalue_with_actions.add_rule('S', ['L', '=', 'R', lambda args: 'assign'])
+      self.lrvalue_with_actions.add_rule('S', ['R'])
+      self.lrvalue_with_actions.add_rule('L', ['*', 'R', lambda args: 'deref'])
+      self.lrvalue_with_actions.add_rule('L', ['id'])
+      self.lrvalue_with_actions.add_rule('R', ['L'])
+      self.lrvalue_with_actions.add_rule('R', ['(', lambda args: 'push', 'S', lambda args: 'pop', ')'])
 
    def test_simple(self):
       expected = follow(self.simple, 'A')
@@ -192,6 +201,24 @@ class FunctionalTestFollow(unittest.TestCase):
       self.assertTrue(len(expected) == 2)
       self.assertTrue(')' in expected)
       self.assertTrue(self.right_recursive_epsilon.EOF in expected)
+   
+   def test_lr_value_with_actions(self):
+      expected = follow(self.lrvalue_with_actions, 'S')
+      self.assertTrue(len(expected) == 2)
+      self.assertTrue(')' in expected)
+      self.assertTrue(self.lrvalue_with_actions.EOF in expected)
+      
+      expected = follow(self.lrvalue_with_actions, 'L')
+      self.assertTrue(len(expected) == 3)
+      self.assertTrue(')' in expected)
+      self.assertTrue('=' in expected)
+      self.assertTrue(self.lrvalue_with_actions.EOF in expected)
+      
+      expected = follow(self.lrvalue_with_actions, 'R')
+      self.assertTrue(len(expected) == 3)
+      self.assertTrue(')' in expected)
+      self.assertTrue('=' in expected)
+      self.assertTrue(self.lrvalue_with_actions.EOF in expected)
 
 if __name__ == '__main__':
    unittest.main()

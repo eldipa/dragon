@@ -29,6 +29,15 @@ class FunctionalTestClosure(unittest.TestCase):
       self.some.add_rule('S', ['C', 'C'])
       self.some.add_rule('C', ['c', 'C'])
       self.some.add_rule('C', ['d'])
+      
+      self.lrvalue_with_actions = grammar.Grammar('S', ('=', '*', '(', ')', 'id'))
+
+      self.lrvalue_with_actions.add_rule('S', ['L', '=', 'R', lambda args: 'assign'])
+      self.lrvalue_with_actions.add_rule('S', ['R'])
+      self.lrvalue_with_actions.add_rule('L', ['*', 'R', lambda args: 'deref'])
+      self.lrvalue_with_actions.add_rule('L', ['id'])
+      self.lrvalue_with_actions.add_rule('R', ['L'])
+      self.lrvalue_with_actions.add_rule('R', ['(', lambda args: 'push', 'S', lambda args: 'pop', ')'])
 
       self.StartExtendedSymbol = grammar.Grammar.START
 
@@ -74,6 +83,19 @@ class FunctionalTestClosure(unittest.TestCase):
       self.assertTrue(a1 == closure(set([Item(self.StartExtendedSymbol, 0, 0)]), self.some))
       self.assertTrue(a2 == closure(set([Item('S', 0, 1), Item('C', 1, 1)]), self.some))
 
+   def test_closures_ofLRValue_with_actions(self):
+      a1 = set([Item(self.StartExtendedSymbol, 0, 0),
+            Item('S', 0, 0), Item('S', 1, 0), 
+            Item('R', 0, 0), Item('R', 1, 0),
+            Item('L', 0, 0), Item('L', 1, 0)])
+      
+      a2 = set([
+            Item(self.lrvalue_with_actions.ACTION_INSIDE % 3, 0, 0), 
+            Item('R', 0, 0), Item('R', 1, 0), Item('R', 1, 1),
+            Item('L', 0, 0), Item('L', 0, 1), Item('L', 1, 0)])
+
+      self.assertTrue(a1 == closure(set([Item(self.StartExtendedSymbol, 0, 0)]), self.lrvalue_with_actions))
+      self.assertTrue(a2 == closure(set([Item('L', 0, 1), Item('R', 1, 1)]), self.lrvalue_with_actions))
 
 if __name__ == '__main__':
    unittest.main()
