@@ -110,4 +110,5 @@ def follow(aGrammar, symbol, seen = None):
                follow_set.update(more_terminals)
                follow_set.update(set(terminals) - set([aGrammar.EMPTY]))
    
+   assert aGrammar.EMPTY not in follow_set
    return frozenset(follow_set)
