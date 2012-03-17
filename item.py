@@ -4,7 +4,7 @@ Item = collections.namedtuple('Item', ('sym_production', 'alternative', 'positio
 
 def _at_the_end(self, my_alternative, grammar):
    '''Return True if the items is A -> abc* .'''
-   return len(my_alternative) == self.position
+   return len(my_alternative) == self.position or grammar.is_empty_rule(my_alternative)
 
 def _next_items(self, grammar):
    '''Given the item A -> abc*Bd, return each alternative of B -> *efg.

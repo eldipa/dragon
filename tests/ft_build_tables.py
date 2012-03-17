@@ -1,6 +1,6 @@
 import unittest
 import grammar
-from lr0 import build_parsing_table
+from lr0 import build_parsing_table, ReduceReduce, ShiftReduce
 from item import Item
 
 class FunctionalTestBuildActionGotoTable(unittest.TestCase):
@@ -25,17 +25,26 @@ class FunctionalTestBuildActionGotoTable(unittest.TestCase):
       self.lrvalue.add_rule('L', ['id'])
       self.lrvalue.add_rule('R', ['L'])
       self.lrvalue.add_rule('R', ['(', 'S', ')'])
+
+      self.reduce_reduce = grammar.Grammar('S', ('=', '?', '#'))
+
+      self.reduce_reduce.add_rule('S', ['A', '#', '='])
+      self.reduce_reduce.add_rule('S', ['B', '#', '?'])
+      self.reduce_reduce.add_rule('A', ['=', '?'])
+      self.reduce_reduce.add_rule('B', ['=', '?'])
       
       self.StartExtendedSymbol = grammar.Grammar.START
       
    
    def test_build_tables(self):
       action_table, goto_table, start_set = build_parsing_table(self.arith, Item(self.StartExtendedSymbol, 0, 0))
-      self.assertTrue(len(action_table) == len(goto_table) == 12)
+      self.assertTrue(len(action_table) == 12)
 
-   def test_not_build_tables(self):
-      self.assertRaisesRegexp(KeyError, "=", build_parsing_table, self.lrvalue, Item(self.StartExtendedSymbol, 0, 0))
+   def test_shift_reduce_conflict(self):
+      self.assertRaisesRegexp(ShiftReduce, "during process '=' terminal", build_parsing_table, self.lrvalue, Item(self.StartExtendedSymbol, 0, 0), False)
 
+   def test_reduce_reduce_conflict(self):
+      self.assertRaisesRegexp(ReduceReduce, "during process '#' terminal", build_parsing_table, self.reduce_reduce, Item(self.StartExtendedSymbol, 0, 0), False)
    
    def test_build_tables_of_arithmetic_grammar(self):
       action_table, goto_table, start_set = build_parsing_table(self.arith, Item(self.StartExtendedSymbol, 0, 0))

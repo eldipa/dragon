@@ -37,10 +37,10 @@ class Grammar:
       for i in range(len(rule)):
          if hasattr(rule[i], '__call__'):
             assert not (i == 0) and "The first item must not be a semantic action."
-            semantic_action = rule[i]
+            __semantic_action = rule[i]
             rule[i] = self._generate_symbol_for_semantic_action_inside()
             self._productions[rule[i]].append((Grammar.EMPTY,))
-            self._assign_semantic_action(rule[i], semantic_action, i, False)
+            self._assign_semantic_action(rule[i], __semantic_action, i, False)
 
       self._productions[symbol].append(tuple(rule))
       self._assign_semantic_action(symbol, semantic_action)
