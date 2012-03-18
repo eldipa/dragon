@@ -101,9 +101,10 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
    '''Preconditions: the grammar must be already processed.'''
    action_table = collections.defaultdict(dict)
    goto_table = collections.defaultdict(dict)
-   canonical = canonical_collection(grammar, start_item)
+   kernels = kernel_collection(grammar, start_item)
 
-   for state_set in canonical:
+   for kernel in kernels:
+      state_set = closure(kernel, grammar)
       for anysymbol in grammar.iter_on_all_symbols():
          g = goto(state_set, anysymbol, grammar)
          if g:
