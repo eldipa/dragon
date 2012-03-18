@@ -5,7 +5,7 @@ import re
 from dragon.lr.util import build_parsing_table
 from dragon.lr.driver import Driver
 from dragon.driver import Lexer
-from dragon.item import Item
+from dragon.lr.item import Item
 
 class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
    class CalcLexer(Lexer):

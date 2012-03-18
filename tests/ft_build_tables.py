@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import build_parsing_table, ReduceReduce, ShiftReduce
-from dragon.item import Item
+from dragon.lr.item import Item
 
 class FunctionalTestBuildActionGotoTable(unittest.TestCase):
 

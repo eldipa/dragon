@@ -2,7 +2,7 @@ import unittest
 from dragon.grammar import Grammar
 from dragon.util import first, follow
 from dragon.lr.util import canonical_collection, build_parsing_table
-from dragon.item import Item
+from dragon.lr.item import Item
 
 class FunctionalTestSpecial(unittest.TestCase):
    def setUp(self):

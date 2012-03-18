@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import goto, kernel_collection
-from dragon.item import Item
+from dragon.lr.item import Item
 
 class FunctionalTestKernelCollection(unittest.TestCase):
 

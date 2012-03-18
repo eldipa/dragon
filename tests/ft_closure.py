@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import closure
-from dragon.item import Item
+from dragon.lr.item import Item
 
 class FunctionalTestClosure(unittest.TestCase):
 
