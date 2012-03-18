@@ -20,15 +20,15 @@ def closure(kernel_items, grammar):
    return frozenset(finished)
 
 
-def goto(items, symbol, grammar):
+def goto(items, symbol, grammar, only_kernel = False):
    '''For each given item A -> a*Bb, collect all items A -> aB*b where B == 'symbol'.
       Then return the closure of the collected set.'''
-   to_process = set([i.item_shifted(grammar) for i in items if i.next_symbol(grammar) == symbol])
-   return closure(to_process, grammar)
+   to_process = frozenset([i.item_shifted(grammar) for i in items if i.next_symbol(grammar) == symbol])
+   return closure(to_process, grammar) if not only_kernel else to_process
 
 
 def canonical_collection(grammar, start_item):
-   start_set = set([start_item])
+   start_set = frozenset([start_item])
    collection = set()
    to_process = list()
    to_process.append(closure(start_set, grammar))
@@ -43,6 +43,25 @@ def canonical_collection(grammar, start_item):
       collection.add(_set)
 
    return frozenset(collection)
+
+def kernel_collection(grammar, start_item):
+   start_set = frozenset([start_item])
+   collection = set()
+   to_process = list()
+   to_process.append(start_set)
+
+   while to_process:
+      kernel_set = to_process.pop()
+      _set = closure(kernel_set, grammar)
+      for symbol in grammar.iter_on_all_symbols():
+         next_set = goto(_set, symbol, grammar, only_kernel=True)
+         if next_set and next_set not in collection:
+            to_process.append(next_set)
+
+      collection.add(kernel_set)
+
+   return frozenset(collection)
+
 
 class LRConflict(Exception):
    def __init__(self, msg):
