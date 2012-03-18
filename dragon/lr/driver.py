@@ -1,6 +1,6 @@
-import driver
+from dragon.driver import Driver as DriverInterface
 
-class LRDriver(driver.Driver):
+class Driver(DriverInterface):
    def __init__(self, action_table, goto_table, start_state):
       self._action_table = action_table
       self._goto_table = goto_table
@@ -17,7 +17,7 @@ class LRDriver(driver.Driver):
          request_token = False
          while not request_token and not finish:
             if terminal not in self._action_table[stack_of_states[-1]]:
-               raise driver.Driver.UnexpectedToken(token, self._action_table[stack_of_states[-1]].keys())
+               raise DriverInterface.UnexpectedToken(token, self._action_table[stack_of_states[-1]].keys())
  
             action = self._action_table[stack_of_states[-1]][terminal]
             action.do(stack_of_states, self._goto_table, synthesized)
@@ -47,7 +47,7 @@ class LRDriver(driver.Driver):
       def __ne__(self, other): return not self == other
 
       def __eq__(self, other):
-         return isinstance(other, LRDriver.Shift) and other._state_to_shift == self._state_to_shift
+         return isinstance(other, Driver.Shift) and other._state_to_shift == self._state_to_shift
 
 
    class Reduce:
@@ -87,7 +87,7 @@ class LRDriver(driver.Driver):
       def __ne__(self, other): return not self == other
 
       def __eq__(self, other):
-         return isinstance(other, LRDriver.Reduce) and other._sym_production == self._sym_production and other._len_production == self._len_production
+         return isinstance(other, Driver.Reduce) and other._sym_production == self._sym_production and other._len_production == self._len_production
 
 
    class Accept:
@@ -100,5 +100,5 @@ class LRDriver(driver.Driver):
       def __ne__(self, other): return not self == other
       
       def __eq__(self, other):
-         return isinstance(other, LRDriver.Accept)
+         return isinstance(other, Driver.Accept)
 

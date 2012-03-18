@@ -1,6 +1,6 @@
 import unittest
-from grammar import Grammar
-from util import follow
+from dragon.grammar import Grammar
+from dragon.util import follow
 
 class FunctionalTestFollow(unittest.TestCase):
    def setUp(self):

@@ -1,11 +1,11 @@
 import unittest
-import grammar
+import dragon.grammar as grammar
 from StringIO import StringIO
 import re
-from lr0 import build_parsing_table
-from lr_driver import LRDriver as Driver
-from driver import Lexer
-from item import Item
+from dragon.lr.util import build_parsing_table
+from dragon.lr.driver import Driver
+from dragon.driver import Lexer
+from dragon.item import Item
 
 class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
    class CalcLexer(Lexer):

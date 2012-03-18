@@ -1,12 +1,12 @@
 import unittest
-import grammar
+import dragon.grammar as grammar
 from StringIO import StringIO
 import re
-from lr0 import build_parsing_table, canonical_collection
-from lr_driver import LRDriver
-from driver import Lexer
-from item import Item
-from util import follow
+from dragon.lr.util import build_parsing_table, canonical_collection
+from dragon.lr.driver import Driver
+from dragon.driver import Lexer
+from dragon.item import Item
+from dragon.util import follow
 
 class RegressionTestUnknowGotoState(unittest.TestCase):
    class CalcLexer(Lexer):
@@ -61,7 +61,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       self.arith.add_rule('E', ['let', push, '(', 'E', ')', pop, lambda args:args])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, Item(self.arith.START, 0, 0))
-      self.driver = LRDriver(self.action_table, dict(self.goto_table), self.start_state)
+      self.driver = Driver(self.action_table, dict(self.goto_table), self.start_state)
 
    def test_cannonical_collection(self):
       collection = canonical_collection(self.arith, Item(self.arith.START, 0, 0))

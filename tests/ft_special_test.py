@@ -1,8 +1,8 @@
 import unittest
-from grammar import Grammar
-from util import first, follow
-from lr0 import canonical_collection, build_parsing_table
-from item import Item
+from dragon.grammar import Grammar
+from dragon.util import first, follow
+from dragon.lr.util import canonical_collection, build_parsing_table
+from dragon.item import Item
 
 class FunctionalTestSpecial(unittest.TestCase):
    def setUp(self):

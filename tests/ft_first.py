@@ -1,6 +1,6 @@
 import unittest
-from grammar import Grammar
-from util import first
+from dragon.grammar import Grammar
+from dragon.util import first
 
 class FunctionalTestFirst(unittest.TestCase):
    def setUp(self):

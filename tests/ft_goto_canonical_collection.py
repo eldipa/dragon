@@ -1,7 +1,7 @@
 import unittest
-import grammar
-from lr0 import goto, canonical_collection
-from item import Item
+import dragon.grammar as grammar
+from dragon.lr.util import goto, canonical_collection
+from dragon.item import Item
 
 class FunctionalTestGotoCanonicalCollection(unittest.TestCase):
 
