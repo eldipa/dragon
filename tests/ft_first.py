@@ -83,12 +83,12 @@ class FunctionalTestFirst(unittest.TestCase):
       
       self.lrvalue_with_actions = Grammar('S', ('=', '*', '(', ')', 'id'))
 
-      self.lrvalue_with_actions.add_rule('S', ['L', '=', 'R', lambda args: 'assign'])
+      self.lrvalue_with_actions.add_rule('S', ['L', '=', 'R', lambda args: 'assign', lambda args:args])
       self.lrvalue_with_actions.add_rule('S', ['R'])
-      self.lrvalue_with_actions.add_rule('L', ['*', 'R', lambda args: 'deref'])
+      self.lrvalue_with_actions.add_rule('L', ['*', 'R', lambda args: 'deref', lambda args:args])
       self.lrvalue_with_actions.add_rule('L', ['id'])
       self.lrvalue_with_actions.add_rule('R', ['L'])
-      self.lrvalue_with_actions.add_rule('R', ['(', lambda args: 'push', 'S', lambda args: 'pop', ')'])
+      self.lrvalue_with_actions.add_rule('R', ['(', lambda args: 'push', 'S', lambda args: 'pop', ')', lambda args:args])
 
    def test_simple(self):
       expected = first(self.simple, ['A'])

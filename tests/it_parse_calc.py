@@ -47,13 +47,13 @@ class IntegralTestParseCalculator(unittest.TestCase):
       def add(args): t = args[0] + args[2]; return t
       def mul(args): t = args[0] * args[2]; return t
 
-      self.arith.add_rule('S', ['E'],           get_result)
-      self.arith.add_rule('E', ['E', '+', 'T'], add)
-      self.arith.add_rule('E', ['T'],           lambda args: args[0])
-      self.arith.add_rule('T', ['T', '*', 'F'], mul)
-      self.arith.add_rule('T', ['F'],           lambda args: args[0])
-      self.arith.add_rule('F', ['(', 'E', ')'], lambda args: args[1])
-      self.arith.add_rule('F', ['id'],          lambda args: args[0])
+      self.arith.add_rule('S', ['E',           get_result])
+      self.arith.add_rule('E', ['E', '+', 'T', add])
+      self.arith.add_rule('E', ['T',           lambda args: args[0]])
+      self.arith.add_rule('T', ['T', '*', 'F', mul])
+      self.arith.add_rule('T', ['F',           lambda args: args[0]])
+      self.arith.add_rule('F', ['(', 'E', ')', lambda args: args[1]])
+      self.arith.add_rule('F', ['id',          lambda args: args[0]])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, Item(self.arith.START, 0, 0))
       self.driver = Driver(self.action_table, self.goto_table, self.start_state)

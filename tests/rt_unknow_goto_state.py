@@ -57,7 +57,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
 
       self.arith.add_rule('S', ['E'])
       self.arith.add_rule('E', ['id'])
-      self.arith.add_rule('E', ['let', push, '(', 'E', ')', pop])
+      self.arith.add_rule('E', ['let', push, '(', 'E', ')', pop, lambda args:args])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, Item(self.arith.START, 0, 0))
       self.driver = Driver(self.action_table, dict(self.goto_table), self.start_state)

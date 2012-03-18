@@ -10,11 +10,11 @@ class FunctionalTestBuildActionGotoTable(unittest.TestCase):
 
       semantic_action = lambda args : args
 
-      self.arith.add_rule('E', ['E', '+', 'T'], semantic_action)
+      self.arith.add_rule('E', ['E', '+', 'T', semantic_action])
       self.arith.add_rule('E', ['T'])
-      self.arith.add_rule('T', ['T', '*', 'F'], semantic_action)
+      self.arith.add_rule('T', ['T', '*', 'F', semantic_action])
       self.arith.add_rule('T', ['F'])
-      self.arith.add_rule('F', ['(', 'E', ')'], semantic_action)
+      self.arith.add_rule('F', ['(', 'E', ')', semantic_action])
       self.arith.add_rule('F', ['id'])
 
       self.lrvalue = grammar.Grammar('S', ('=', '*', '(', ')', 'id'))
