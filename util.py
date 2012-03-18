@@ -8,9 +8,9 @@ def first(aGrammar, symbols):
       - If symbols are 'ABCx', where 'A' is a nonterminal and it derives in a empty
       string, then, the 'first' of symbols is the 'first of A' union the 'first of B'. If 
       B derives in a empty string too, then, append the 'first of C' and so on. If there 
-      aren't more symbols in 'symbols', add the EMPTY terminal to set 'first of 'symbols'.
+      aren't more symbols in 'symbols', add the EMPTY terminal to the set 'first of 'symbols'.
 
-      This algorithm works for left and right recursive functions.
+      This algorithm works for left and right recursive grammars.
       '''
       
    symbol_derive_empty = set()
@@ -74,7 +74,7 @@ def first(aGrammar, symbols):
 
 
 def follow(aGrammar, symbol, seen = None):
-   '''Return the set of terminal that 'follow' the nonterminal symbol 'symbol'.
+   '''Returns the set of terminal that 'follow' the nonterminal symbol 'symbol'.
       
       Let be X the nonterminal symbol.
       If A -> aX, the set 'follow of A' is in 'follow of X'
@@ -82,7 +82,7 @@ def follow(aGrammar, symbol, seen = None):
       is in 'first of B', then the follow of A is in follow of X too.
       If X is the 'start symbol', add the terminal 'End Of File' to the 'follow of X'.
 
-      Precondition: the grammar must be a augment grammar.
+      Precondition: the grammar must be a grammar augmented.
       '''
 
    target = symbol

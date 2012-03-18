@@ -3,7 +3,8 @@ import grammar
 from StringIO import StringIO
 import re
 from lr0 import build_parsing_table
-from driver import Lexer, Driver
+from lr_driver import LRDriver as Driver
+from driver import Lexer
 from item import Item
 
 class IntegralTestParseCalculator(unittest.TestCase):

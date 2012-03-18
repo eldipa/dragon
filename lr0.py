@@ -1,6 +1,6 @@
 
 import collections
-from driver import Driver
+from lr_driver import LRDriver
 from util import follow
 
 def closure(kernel_items, grammar):
@@ -116,7 +116,7 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
 
          next_symbol = item.next_symbol(grammar)
          if item.sym_production == grammar.START and item.position == 1: #Item is S' -> S*
-            action = Driver.Accept()
+            action = LRDriver.Accept()
             if grammar.EOF in action_table[hash(state_set)] and action != action_table[hash(state_set)][grammar.EndOfSource]:
                raise KeyError(grammar.EOF)
 
@@ -125,7 +125,7 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
          elif next_symbol and not grammar.is_a_nonterminal(next_symbol): #Item is A -> a*bc
             assert not grammar.is_empty(next_symbol)
             goto_state_hash = hash(goto(state_set, next_symbol, grammar))
-            action = Driver.Shift(goto_state_hash, item.sym_production, grammar[item.sym_production][item.alternative])
+            action = LRDriver.Shift(goto_state_hash, item.sym_production, grammar[item.sym_production][item.alternative])
 
             if next_symbol in action_table[hash(state_set)] and action != action_table[hash(state_set)][next_symbol]:
                action = handler_conflict(action, action_table[hash(state_set)][next_symbol], next_symbol, handle_shift_reduce)
@@ -136,7 +136,7 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
          elif not next_symbol:    #Item is A -> abc*
             for terminal in follow(grammar, item.sym_production): 
                semantic_definition = grammar.semantic_definition(item.sym_production, item.alternative)
-               action = Driver.Reduce(item.sym_production, grammar[item.sym_production][item.alternative], semantic_definition, grammar.is_empty_rule((grammar[item.sym_production][item.alternative])) )
+               action = LRDriver.Reduce(item.sym_production, grammar[item.sym_production][item.alternative], semantic_definition, grammar.is_empty_rule((grammar[item.sym_production][item.alternative])) )
                if terminal in action_table[hash(state_set)] and action != action_table[hash(state_set)][terminal]:
                   action = handler_conflict(action, action_table[hash(state_set)][terminal], terminal, handle_shift_reduce)
 
