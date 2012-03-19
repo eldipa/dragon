@@ -121,7 +121,7 @@ class Grammar:
          The grammar can be augment only once.'''
       assert not symbol_start in self._productions
       assert not self.is_augment()
-      self.add_rule(Grammar.START, (symbol_start, Grammar.EOF) + ((semantic_action,) if semantic_action else ()))
+      self.add_rule(Grammar.START, (symbol_start, ) + ((semantic_action,) if semantic_action else ()))
 
    def start_symbol(self):
       '''Returns the 'start_symbol' which form the rule
@@ -168,7 +168,7 @@ class Grammar:
 
    def is_a_terminal(self, symbol):
       '''Returns True if 'symbol' is a terminal. False in other case.'''
-      return symbol in self._terminals
+      return symbol in self._terminals or symbol == self.EOF
 
    def is_a_nonterminal(self, symbol):
       '''Returns True if 'symbol' is a nonterminal. That is, the 'symbol' has one o more
