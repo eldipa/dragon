@@ -1,4 +1,5 @@
 import collections
+from dragon.util import follow
 
 class Item:
    def __init__(self, sym_production, alternative, position):
@@ -40,6 +41,9 @@ class Item:
          Precondition: The initial item must not be A -> abc* .'''
       assert self.next_symbol(grammar)
       return Item(self.sym_production, self.alternative, self.position + 1)
+
+   def followers(self, grammar):
+      return follow(grammar, self.sym_production)
 
    def __hash__(self):
       return hash((self.sym_production, self.alternative, self.position))

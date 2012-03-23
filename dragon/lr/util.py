@@ -134,7 +134,7 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
    
 
          elif not next_symbol:    #Item is A -> abc*
-            for terminal in follow(grammar, item.sym_production): 
+            for terminal in item.followers(grammar): 
                semantic_definition = grammar.semantic_definition(item.sym_production, item.alternative)
                action = Driver.Reduce(item.sym_production, grammar[item.sym_production][item.alternative], semantic_definition, grammar.is_empty_rule((grammar[item.sym_production][item.alternative])) )
                if terminal in action_table[hash(state_set)] and action != action_table[hash(state_set)][terminal]:

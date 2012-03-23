@@ -34,6 +34,9 @@ class LookAhead(Item):
          Precondition: The initial item must not be A -> abc* .'''
       assert self.next_symbol(grammar)
       return LookAhead(self.sym_production, self.alternative, self.position + 1, self.lookahead)
+   
+   def followers(self, grammar):
+      return frozenset([self.lookahead])
 
    def __hash__(self):
       return hash((self.sym_production, self.alternative, self.position, self.lookahead))

@@ -84,6 +84,8 @@ class Grammar:
       assert rule
       assert Grammar.EMPTY not in rule
 
+      rule = list(rule)
+
       semantic_action = rule.pop() if hasattr(rule[-1], '__call__') else None
 
       for i in range(len(rule)):
