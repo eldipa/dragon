@@ -6,6 +6,8 @@ class Grammar:
    START = "<<S>>"
    EOF = "<<$>>"
    ACTION_INSIDE = "<<@%i>>"
+   PROBE = "<<#>>"
+
    def __init__(self, start_symbol = None, terminals = None):
       '''Creates a Grammar with an optional 'start' symbol and a optional initial set
          of terminals.
@@ -169,8 +171,11 @@ class Grammar:
       return (Grammar.EMPTY, ) == rule
 
    def is_a_terminal(self, symbol):
-      '''Returns True if 'symbol' is a terminal. False in other case.'''
-      return symbol in self._terminals or symbol == self.EOF
+      '''Returns True if 'symbol' is a terminal. False in other case.
+
+         This include the special terminal 'self.EOF' and 'self.PROBE'.
+         '''
+      return symbol in self._terminals or symbol == self.EOF or symbol == self.PROBE
 
    def is_a_nonterminal(self, symbol):
       '''Returns True if 'symbol' is a nonterminal. That is, the 'symbol' has one o more

@@ -7,6 +7,9 @@ class Item:
       self.alternative = alternative
       self.position = position
 
+   def self_factory(self, sym_production, alternative, position):
+      return Item(sym_production, alternative, position)
+
    def at_the_end(self, my_alternative, grammar):
       '''Return True if the items is A -> abc* .'''
       return len(my_alternative) == self.position or grammar.is_empty_rule(my_alternative)
@@ -20,7 +23,7 @@ class Item:
 
       next_sym_production = alternative[self.position]
       if grammar.is_a_nonterminal(next_sym_production):
-         return [Item(next_sym_production, i, 0) for i in range(len(grammar[next_sym_production]))]
+         return [self.self_factory(next_sym_production, i, 0) for i in range(len(grammar[next_sym_production]))]
 
       else:
          return []
@@ -40,7 +43,7 @@ class Item:
          
          Precondition: The initial item must not be A -> abc* .'''
       assert self.next_symbol(grammar)
-      return Item(self.sym_production, self.alternative, self.position + 1)
+      return self.self_factory(self.sym_production, self.alternative, self.position + 1)
 
    def followers(self, grammar):
       return follow(grammar, self.sym_production)

@@ -7,6 +7,9 @@ class LookAhead(Item):
       Item.__init__(self, sym_production, alternative, position)
       self.lookahead = lookahead
 
+   def self_factory(self, sym_production, alternative, position):
+      return LookAhead(sym_production, alternative, position, self.lookahead)
+
    def next_items(self, grammar):
       '''Given the item A -> abc*Bd [x], where x is the lookahead terminal, return 
          each alternative of B -> *efg [y], for each 'y' in first(dx).
@@ -27,14 +30,6 @@ class LookAhead(Item):
          return []
 
 
-   def item_shifted(self, grammar):
-      '''Given the item A -> abc*Xde [x], return a new item A -> abcX*de [x] where x is
-         the terminal lookahead.
-         
-         Precondition: The initial item must not be A -> abc* .'''
-      assert self.next_symbol(grammar)
-      return LookAhead(self.sym_production, self.alternative, self.position + 1, self.lookahead)
-   
    def followers(self, grammar):
       return frozenset([self.lookahead])
 

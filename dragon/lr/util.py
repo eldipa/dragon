@@ -2,6 +2,9 @@ import collections
 from dragon.lr.driver import Driver
 from dragon.util import follow
 
+from dragon.lr.lookahead_compress import LookAheadCompress
+from dragon.lr.lookahead import LookAhead
+
 def closure(kernel_items, grammar):
    '''For each given item A -> ab*B, collect all items B -> *cd
       and return them union with the initial items.'''
@@ -97,50 +100,138 @@ def handler_conflict(new_action, old_action, next_symbol, handle_shift_reduce):
          raise ShiftReduce(new_action, old_action, next_symbol)
 
 
+def populate_goto_table_from_state(grammar, state_set, goto_table):
+   for anysymbol in grammar.iter_on_all_symbols():
+      g = goto(state_set, anysymbol, grammar)
+      if g:
+         goto_table[hash(state_set)][anysymbol] = hash(g) 
+
+def populate_action_table_from_state(grammar, state_set, start_item, action_table, handle_shift_reduce):
+   for item in state_set:
+
+      next_symbol = item.next_symbol(grammar)
+      if item.sym_production == grammar.START and item.position == 1: #Item is S' -> S*
+         action = Driver.Accept()
+         if grammar.EOF in action_table[hash(state_set)] and action != action_table[hash(state_set)][grammar.EndOfSource]:
+            raise KeyError(grammar.EOF)
+
+         action_table[hash(state_set)][grammar.EOF] = action
+
+      elif next_symbol and not grammar.is_a_nonterminal(next_symbol): #Item is A -> a*bc
+         assert not grammar.is_empty(next_symbol)
+         goto_state_hash = hash(goto(state_set, next_symbol, grammar))
+         action = Driver.Shift(goto_state_hash, item.sym_production, grammar[item.sym_production][item.alternative])
+
+         if next_symbol in action_table[hash(state_set)] and action != action_table[hash(state_set)][next_symbol]:
+            action = handler_conflict(action, action_table[hash(state_set)][next_symbol], next_symbol, handle_shift_reduce)
+
+         action_table[hash(state_set)][next_symbol] = action
+
+
+      elif not next_symbol:    #Item is A -> abc*
+         for terminal in item.followers(grammar): 
+            semantic_definition = grammar.semantic_definition(item.sym_production, item.alternative)
+            action = Driver.Reduce(item.sym_production, grammar[item.sym_production][item.alternative], semantic_definition, grammar.is_empty_rule((grammar[item.sym_production][item.alternative])) )
+            if terminal in action_table[hash(state_set)] and action != action_table[hash(state_set)][terminal]:
+               action = handler_conflict(action, action_table[hash(state_set)][terminal], terminal, handle_shift_reduce)
+
+            action_table[hash(state_set)][terminal] = action
+
+
 def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
    '''Preconditions: the grammar must be already processed.'''
    action_table = collections.defaultdict(dict)
    goto_table = collections.defaultdict(dict)
    kernels = kernel_collection(grammar, start_item)
+   start_set_hash = None
 
    for kernel in kernels:
       state_set = closure(kernel, grammar)
-      for anysymbol in grammar.iter_on_all_symbols():
-         g = goto(state_set, anysymbol, grammar)
-         if g:
-            goto_table[hash(state_set)][anysymbol] = hash(g)
       
-      for item in state_set:
-         if item == start_item:
-            start_set_hash = hash(state_set)
+      populate_goto_table_from_state(grammar, state_set, goto_table)
+      populate_action_table_from_state(grammar, state_set, start_item, action_table, handle_shift_reduce)
+      
+      if not start_set_hash:
+         for item in state_set:
+            if item == start_item:
+               start_set_hash = hash(state_set)
 
-         next_symbol = item.next_symbol(grammar)
-         if item.sym_production == grammar.START and item.position == 1: #Item is S' -> S*
-            action = Driver.Accept()
-            if grammar.EOF in action_table[hash(state_set)] and action != action_table[hash(state_set)][grammar.EndOfSource]:
-               raise KeyError(grammar.EOF)
+   return dict(action_table), dict(goto_table), start_set_hash
 
-            action_table[hash(state_set)][grammar.EOF] = action
 
-         elif next_symbol and not grammar.is_a_nonterminal(next_symbol): #Item is A -> a*bc
-            assert not grammar.is_empty(next_symbol)
-            goto_state_hash = hash(goto(state_set, next_symbol, grammar))
-            action = Driver.Shift(goto_state_hash, item.sym_production, grammar[item.sym_production][item.alternative])
-
-            if next_symbol in action_table[hash(state_set)] and action != action_table[hash(state_set)][next_symbol]:
-               action = handler_conflict(action, action_table[hash(state_set)][next_symbol], next_symbol, handle_shift_reduce)
-
-            action_table[hash(state_set)][next_symbol] = action
+def generate_spontaneously_lookaheads(grammar, start_item, handle_shift_reduce = True):
+   goto_table = collections.defaultdict(dict)
    
+   lalr_start_item = LookAheadCompress(start_item.sym_production, start_item.alternative, start_item.position)
+   lalr_start_item.add_new(grammar.EOF)
+   kernels_lalr = kernel_collection(grammar, lalr_start_item)
 
-         elif not next_symbol:    #Item is A -> abc*
-            for terminal in item.followers(grammar): 
-               semantic_definition = grammar.semantic_definition(item.sym_production, item.alternative)
-               action = Driver.Reduce(item.sym_production, grammar[item.sym_production][item.alternative], semantic_definition, grammar.is_empty_rule((grammar[item.sym_production][item.alternative])) )
-               if terminal in action_table[hash(state_set)] and action != action_table[hash(state_set)][terminal]:
-                  action = handler_conflict(action, action_table[hash(state_set)][terminal], terminal, handle_shift_reduce)
+   ids_kernes_lalr = dict()
+   for kernels in kernels_lalr:
+      closure_lalr = closure(kernels, grammar)
+      ids_kernes_lalr[hash(closure_lalr)] = kernels
+      populate_goto_table_from_state(grammar, closure_lalr, goto_table)
 
-               action_table[hash(state_set)][terminal] = action
+   for id_, kernels in ids_kernes_lalr.iteritems():
+      for item_lalr in kernels:
+         closure_lr1 = closure(set([LookAhead(item_lalr.sym_production, item_lalr.alternative, item_lalr.position, grammar.PROBE)]), grammar)
 
+         for item_lr1 in closure_lr1:
+            next_symbol = item_lr1.next_symbol(grammar)
+            if not next_symbol:
+               continue
+            item_lr1_shifted = item_lr1.item_shifted(grammar)
+               
+            assert id_ in goto_table
+            goto_set_id = goto_table[id_][next_symbol]
+            goto_set = ids_kernes_lalr[goto_set_id]
+
+            item_lalr_from_shifted = LookAheadCompress(item_lr1_shifted.sym_production, item_lr1_shifted.alternative, item_lr1_shifted.position)
+            assert item_lalr_from_shifted in goto_set
+            
+            singleton = (goto_set - (goto_set - {item_lalr_from_shifted}))
+            assert len(singleton) == 1
+            
+            item_lalr_hidden = set(singleton).pop()
+
+            if item_lr1.lookahead != grammar.PROBE:
+               item_lalr_hidden.add_new(item_lr1.lookahead)
+
+            else:
+               item_lalr.subscribe(item_lalr_hidden)
+
+   return kernels_lalr, goto_table
+
+def propagate_lookaheads(grammar, kernels_lalr):
+   changes = True
+   while changes:
+      changes = False
+      for kernels in kernels_lalr:
+         for item_lalr in kernels:
+            changes |= item_lalr.propagate()
+
+   for kernels in kernels_lalr:
+      for item_lalr in kernels:
+         item_lalr.close()
+
+def build_parsing_table_lalr(grammar, start_item, handle_shift_reduce = True):
+   action_table = collections.defaultdict(dict)
+   start_set_hash = None
+   
+   kernels_lalr, goto_table = generate_spontaneously_lookaheads(grammar, start_item, handle_shift_reduce)
+   propagate_lookaheads(grammar, kernels_lalr)
+   for kernel in kernels_lalr:
+      state_set = closure(kernel, grammar)
+      populate_action_table_from_state(grammar, state_set, start_item, action_table, handle_shift_reduce)
+      
+      if not start_set_hash:
+         for item in state_set:
+            if item == start_item:
+               start_set_hash = hash(state_set)
+               break
+   
+   for i in goto_table:
+      for j in goto_table[i]:
+         goto_table[i][j] = hash(goto_table[i][j])
 
    return dict(action_table), dict(goto_table), start_set_hash
