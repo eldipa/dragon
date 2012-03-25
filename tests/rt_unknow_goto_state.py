@@ -5,7 +5,7 @@ import re
 from dragon.lr.util import build_parsing_table, canonical_collection
 from dragon.lr.driver import Driver
 from dragon.driver import Lexer
-from dragon.lr.item import Item
+from dragon.lr.item import LR0
 from dragon.util import follow
 
 class RegressionTestUnknowGotoState(unittest.TestCase):
@@ -60,47 +60,47 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       self.arith.add_rule('E', ['id'])
       self.arith.add_rule('E', ['let', push, '(', 'E', ')', pop, lambda args:args])
 
-      self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, Item(self.arith.START, 0, 0))
+      self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, LR0(self.arith.START, 0, 0))
       self.driver = Driver(self.action_table, dict(self.goto_table), self.start_state)
 
    def test_cannonical_collection(self):
-      collection = canonical_collection(self.arith, Item(self.arith.START, 0, 0))
+      collection = canonical_collection(self.arith, LR0(self.arith.START, 0, 0))
       
       states = frozenset([
       frozenset([
-         Item(self.arith.START, 0, 0),
-         Item('S', 0, 0), 
-         Item('E', 0, 0), Item('E', 1, 0),]),
+         LR0(self.arith.START, 0, 0),
+         LR0('S', 0, 0), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]),
       
       frozenset([
-         Item(self.arith.START, 0, 1),]),
+         LR0(self.arith.START, 0, 1),]),
       
       frozenset([
-         Item('E', 0, 1),]),
+         LR0('E', 0, 1),]),
 
       frozenset([
-         Item('S', 0, 1),]),
+         LR0('S', 0, 1),]),
       
       frozenset([
-         Item('E', 1, 1), 
-         Item(self.arith.ACTION_INSIDE % 1, 0, 0),]),
+         LR0('E', 1, 1), 
+         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]),
       
       frozenset([
-         Item('E', 1, 2),]),
+         LR0('E', 1, 2),]),
       
       frozenset([
-         Item('E', 1, 4),]),
+         LR0('E', 1, 4),]),
       
       frozenset([
-         Item('E', 1, 6),]),
+         LR0('E', 1, 6),]),
       
       frozenset([
-         Item('E', 1, 5), 
-         Item(self.arith.ACTION_INSIDE % 2, 0, 0),]),
+         LR0('E', 1, 5), 
+         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]),
 
       frozenset([
-         Item('E', 1, 3), 
-         Item('E', 0, 0), Item('E', 1, 0),]),
+         LR0('E', 1, 3), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]),
       ])
       
       self.assertTrue(states == collection)
@@ -109,39 +109,39 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
    def test_goto_table(self):
       states_gotos = [
       (frozenset([
-         Item(self.arith.START, 0, 0),
-         Item('S', 0, 0), 
-         Item('E', 0, 0), Item('E', 1, 0),]),  (('S', 1), ('id', 2), ('E', 3), ('let', 4))),
+         LR0(self.arith.START, 0, 0),
+         LR0('S', 0, 0), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]),  (('S', 1), ('id', 2), ('E', 3), ('let', 4))),
       
       (frozenset([
-         Item(self.arith.START, 0, 1),]),  ()),
+         LR0(self.arith.START, 0, 1),]),  ()),
       
       (frozenset([
-         Item('E', 0, 1),]),  ()),
+         LR0('E', 0, 1),]),  ()),
 
       (frozenset([
-         Item('S', 0, 1),]),  ()),
+         LR0('S', 0, 1),]),  ()),
       
       (frozenset([
-         Item('E', 1, 1), 
-         Item(self.arith.ACTION_INSIDE % 1, 0, 0),]),  ((self.arith.ACTION_INSIDE % 1, 5),)),
+         LR0('E', 1, 1), 
+         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]),  ((self.arith.ACTION_INSIDE % 1, 5),)),
       
       (frozenset([
-         Item('E', 1, 2),]),  (('(', 9),)),
+         LR0('E', 1, 2),]),  (('(', 9),)),
       
       (frozenset([
-         Item('E', 1, 4),]),  ((')', 8),)),
+         LR0('E', 1, 4),]),  ((')', 8),)),
       
       (frozenset([
-         Item('E', 1, 6),]),  ()),
+         LR0('E', 1, 6),]),  ()),
       
       (frozenset([
-         Item('E', 1, 5), 
-         Item(self.arith.ACTION_INSIDE % 2, 0, 0),]), ((self.arith.ACTION_INSIDE % 2, 7),) ),
+         LR0('E', 1, 5), 
+         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]), ((self.arith.ACTION_INSIDE % 2, 7),) ),
 
       (frozenset([
-         Item('E', 1, 3), 
-         Item('E', 0, 0), Item('E', 1, 0),]),  (('E', 6), ('id', 2), ('let', 4))),
+         LR0('E', 1, 3), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]),  (('E', 6), ('id', 2), ('let', 4))),
       ]
 
       checked = 0
@@ -166,39 +166,39 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
    def test_action_table(self):
       states_shifts_reduce_actions = [
       (frozenset([
-         Item(self.arith.START, 0, 0),
-         Item('S', 0, 0), 
-         Item('E', 0, 0), Item('E', 1, 0),]), (('id', 2), ('let', 4)), () ),
+         LR0(self.arith.START, 0, 0),
+         LR0('S', 0, 0), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]), (('id', 2), ('let', 4)), () ),
       
       (frozenset([
-         Item(self.arith.START, 0, 1),]), (), () ),
+         LR0(self.arith.START, 0, 1),]), (), () ),
       
       (frozenset([
-         Item('E', 0, 1),]), (), () ),
+         LR0('E', 0, 1),]), (), () ),
 
       (frozenset([
-         Item('S', 0, 1),]), (), () ),
+         LR0('S', 0, 1),]), (), () ),
       
       (frozenset([
-         Item('E', 1, 1), 
-         Item(self.arith.ACTION_INSIDE % 1, 0, 0),]), (), () ),
+         LR0('E', 1, 1), 
+         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]), (), () ),
       
       (frozenset([
-         Item('E', 1, 2),]), (('(', 9),), () ),
+         LR0('E', 1, 2),]), (('(', 9),), () ),
       
       (frozenset([
-         Item('E', 1, 4),]), ((')', 8),), () ),
+         LR0('E', 1, 4),]), ((')', 8),), () ),
       
       (frozenset([
-         Item('E', 1, 6),]), (), () ),
+         LR0('E', 1, 6),]), (), () ),
       
       (frozenset([
-         Item('E', 1, 5), 
-         Item(self.arith.ACTION_INSIDE % 2, 0, 0),]), (), () ),
+         LR0('E', 1, 5), 
+         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]), (), () ),
 
       (frozenset([
-         Item('E', 1, 3), 
-         Item('E', 0, 0), Item('E', 1, 0),]), (('id', 2), ('let', 4)), () ),
+         LR0('E', 1, 3), 
+         LR0('E', 0, 0), LR0('E', 1, 0),]), (('id', 2), ('let', 4)), () ),
       ]
 
       self.assertTrue(len(states_shifts_reduce_actions) == len(self.action_table.keys()))

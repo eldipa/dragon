@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import build_parsing_table, ReduceReduce, ShiftReduce
-from dragon.lr.item import Item
+from dragon.lr.item import LR0
 
 class FunctionalTestBuildActionGotoTable(unittest.TestCase):
 
@@ -37,17 +37,17 @@ class FunctionalTestBuildActionGotoTable(unittest.TestCase):
       
    
    def test_build_tables(self):
-      action_table, goto_table, start_set = build_parsing_table(self.arith, Item(self.StartExtendedSymbol, 0, 0))
+      action_table, goto_table, start_set = build_parsing_table(self.arith, LR0(self.StartExtendedSymbol, 0, 0))
       self.assertTrue(len(action_table) == 12)
 
    def test_shift_reduce_conflict(self):
-      self.assertRaisesRegexp(ShiftReduce, "during process '=' terminal", build_parsing_table, self.lrvalue, Item(self.StartExtendedSymbol, 0, 0), False)
+      self.assertRaisesRegexp(ShiftReduce, "during process '=' terminal", build_parsing_table, self.lrvalue, LR0(self.StartExtendedSymbol, 0, 0), False)
 
    def test_reduce_reduce_conflict(self):
-      self.assertRaisesRegexp(ReduceReduce, "during process '#' terminal", build_parsing_table, self.reduce_reduce, Item(self.StartExtendedSymbol, 0, 0), False)
+      self.assertRaisesRegexp(ReduceReduce, "during process '#' terminal", build_parsing_table, self.reduce_reduce, LR0(self.StartExtendedSymbol, 0, 0), False)
    
    def test_build_tables_of_arithmetic_grammar(self):
-      action_table, goto_table, start_set = build_parsing_table(self.arith, Item(self.StartExtendedSymbol, 0, 0))
+      action_table, goto_table, start_set = build_parsing_table(self.arith, LR0(self.StartExtendedSymbol, 0, 0))
       states = action_table.keys()
 
 

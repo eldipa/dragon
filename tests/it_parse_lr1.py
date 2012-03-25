@@ -5,7 +5,7 @@ import re
 from dragon.lr.util import build_parsing_table
 from dragon.lr.driver import Driver
 from dragon.driver import Lexer
-from dragon.lr.lookahead import LookAhead
+from dragon.lr.item import LR1
 
 class IntegralTestParseCalculatorForLR1Grammar(unittest.TestCase):
    class CalcLexer(Lexer):
@@ -74,7 +74,7 @@ class IntegralTestParseCalculatorForLR1Grammar(unittest.TestCase):
       self.lrvalue.add_rule('R', ['L',             lambda args: args[0]])
       self.lrvalue.add_rule('R', ['num',           lambda args: args[0]])
 
-      self.action_table, self.goto_table, self.start_state = build_parsing_table(self.lrvalue, LookAhead(self.lrvalue.START, 0, 0, self.lrvalue.EOF), False)
+      self.action_table, self.goto_table, self.start_state = build_parsing_table(self.lrvalue, LR1(self.lrvalue.START, 0, 0, self.lrvalue.EOF), False)
       self.driver = Driver(self.action_table, self.goto_table, self.start_state)
 
    

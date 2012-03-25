@@ -1,8 +1,7 @@
 import unittest
 import dragon.grammar as grammar
-from dragon.lr.util import goto, kernel_collection, generate_spontaneously_lookaheads, propagate_lookaheads
-from dragon.lr.lookahead_compress import LookAheadCompress
-from dragon.lr.item import Item
+from dragon.lr.util import generate_spontaneously_lookaheads, propagate_lookaheads
+from dragon.lr.item import LR0
 
 class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
 
@@ -15,7 +14,7 @@ class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
       
       self.StartExtendedSymbol = grammar.Grammar.START
       
-      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, Item(self.lrvalue.START, 0, 0), False)
+      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, LR0(self.lrvalue.START, 0, 0), False)
 
    def test_kernel_collection_lalr(self):
       collection = self.kernels_lalr
@@ -23,13 +22,13 @@ class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
       self.assertTrue(len(collection) == 7)
       
       expecteds = [
-         (Item(self.lrvalue.START, 0, 0), [self.lrvalue.EOF]),
-         (Item(self.lrvalue.START, 0, 1), [self.lrvalue.EOF]),
-         (Item('S', 0, 1),                [self.lrvalue.EOF]),
-         (Item('C', 0, 1),                ['c', 'd', self.lrvalue.EOF]),
-         (Item('C', 1, 1),                ['c', 'd', self.lrvalue.EOF]),
-         (Item('S', 0, 2),                [self.lrvalue.EOF]),
-         (Item('C', 0, 2),                ['c', 'd', self.lrvalue.EOF]), 
+         (LR0(self.lrvalue.START, 0, 0), [self.lrvalue.EOF]),
+         (LR0(self.lrvalue.START, 0, 1), [self.lrvalue.EOF]),
+         (LR0('S', 0, 1),                [self.lrvalue.EOF]),
+         (LR0('C', 0, 1),                ['c', 'd', self.lrvalue.EOF]),
+         (LR0('C', 1, 1),                ['c', 'd', self.lrvalue.EOF]),
+         (LR0('S', 0, 2),                [self.lrvalue.EOF]),
+         (LR0('C', 0, 2),                ['c', 'd', self.lrvalue.EOF]), 
          ]
    
       for kernels in collection:

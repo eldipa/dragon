@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import build_parsing_table, ReduceReduce, ShiftReduce
-from dragon.lr.lookahead import LookAhead
+from dragon.lr.item import LR1
 
 class RegresionTestBuildActionGotoTableForLR1Grammar(unittest.TestCase):
    def setUp(self):
@@ -16,7 +16,7 @@ class RegresionTestBuildActionGotoTableForLR1Grammar(unittest.TestCase):
 
       
    def test_shift_reduce_conflict_from_LR0_solved_with_LR1(self):
-      action_table, goto_table, start_set = build_parsing_table(self.lrvalue, LookAhead(self.lrvalue.START, 0, 0, self.lrvalue.EOF), False)
+      action_table, goto_table, start_set = build_parsing_table(self.lrvalue, LR1(self.lrvalue.START, 0, 0, self.lrvalue.EOF), False)
       self.assertTrue(True) #No raised any exception
 
 

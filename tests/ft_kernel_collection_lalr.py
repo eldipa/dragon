@@ -1,8 +1,7 @@
 import unittest
 import dragon.grammar as grammar
-from dragon.lr.util import goto, kernel_collection
-from dragon.lr.lookahead_compress import LookAheadCompress
-from dragon.lr.item import Item
+from dragon.lr.util import kernel_collection
+from dragon.lr.item import LR0, LALR
 
 class FunctionalTestKernelCollectionForLALRGrammar(unittest.TestCase):
 
@@ -17,34 +16,34 @@ class FunctionalTestKernelCollectionForLALRGrammar(unittest.TestCase):
 
 
    def test_kernel_collection_lalr(self):
-      collection = kernel_collection(self.lrvalue, LookAheadCompress(self.StartExtendedSymbol, 0, 0))
+      collection = kernel_collection(self.lrvalue, LALR(self.StartExtendedSymbol, 0, 0))
       self.assertTrue(len(collection) == 7)
 
       states = frozenset([
       frozenset([
-         LookAheadCompress(self.StartExtendedSymbol, 0, 0),
+         LALR(self.StartExtendedSymbol, 0, 0),
          ]),
       
       frozenset([
-         LookAheadCompress(self.StartExtendedSymbol, 0, 1),
+         LALR(self.StartExtendedSymbol, 0, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('S', 0, 1),
+         LALR('S', 0, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('C', 0, 1), ]),
+         LALR('C', 0, 1), ]),
 
       frozenset([
-         LookAheadCompress('C', 1, 1),
+         LALR('C', 1, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('S', 0, 2), ]),
+         LALR('S', 0, 2), ]),
          
       frozenset([
-         LookAheadCompress('C', 0, 2),
+         LALR('C', 0, 2),
          ]),
 
       ])
@@ -54,58 +53,58 @@ class FunctionalTestKernelCollectionForLALRGrammar(unittest.TestCase):
    def test_equivalence_sets_lalr_and_sets_lr0(self):
       states_lalr = frozenset([
       frozenset([
-         LookAheadCompress(self.StartExtendedSymbol, 0, 0),
+         LALR(self.StartExtendedSymbol, 0, 0),
          ]),
       
       frozenset([
-         LookAheadCompress(self.StartExtendedSymbol, 0, 1),
+         LALR(self.StartExtendedSymbol, 0, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('S', 0, 1),
+         LALR('S', 0, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('C', 0, 1), ]),
+         LALR('C', 0, 1), ]),
 
       frozenset([
-         LookAheadCompress('C', 1, 1),
+         LALR('C', 1, 1),
          ]),
 
       frozenset([
-         LookAheadCompress('S', 0, 2), ]),
+         LALR('S', 0, 2), ]),
          
       frozenset([
-         LookAheadCompress('C', 0, 2),
+         LALR('C', 0, 2),
          ]),
 
       ])
 
       states_lr0 = frozenset([
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 0),
+         LR0(self.StartExtendedSymbol, 0, 0),
          ]),
       
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 1),
+         LR0(self.StartExtendedSymbol, 0, 1),
          ]),
 
       frozenset([
-         Item('S', 0, 1),
+         LR0('S', 0, 1),
          ]),
 
       frozenset([
-         Item('C', 0, 1), ]),
+         LR0('C', 0, 1), ]),
 
       frozenset([
-         Item('C', 1, 1),
+         LR0('C', 1, 1),
          ]),
 
       frozenset([
-         Item('S', 0, 2), ]),
+         LR0('S', 0, 2), ]),
          
       frozenset([
-         Item('C', 0, 2),
+         LR0('C', 0, 2),
          ]),
 
       ])

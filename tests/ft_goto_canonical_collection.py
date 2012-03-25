@@ -1,7 +1,7 @@
 import unittest
 import dragon.grammar as grammar
 from dragon.lr.util import goto, canonical_collection
-from dragon.lr.item import Item
+from dragon.lr.item import LR0
 
 class FunctionalTestGotoCanonicalCollection(unittest.TestCase):
 
@@ -29,118 +29,118 @@ class FunctionalTestGotoCanonicalCollection(unittest.TestCase):
 
    def test_goto_arith(self):
       a1 = set([
-         Item('E', 0, 2), 
-         Item('T', 0, 0), Item('T', 1, 0),
-         Item('F', 0, 0), Item('F', 1, 0), ])
+         LR0('E', 0, 2), 
+         LR0('T', 0, 0), LR0('T', 1, 0),
+         LR0('F', 0, 0), LR0('F', 1, 0), ])
 
-      a2 = set([Item('E', 0, 1), ])
+      a2 = set([LR0('E', 0, 1), ])
 
-      a3 = set([Item('T', 0, 3), ])
+      a3 = set([LR0('T', 0, 3), ])
 
-      self.assertTrue(a1 == goto(set([Item(self.StartExtendedSymbol, 0, 1), Item('E', 0, 1)]), '+', self.arith))
-      self.assertTrue(a2 == goto(set([Item('E', 0, 0)]), 'E', self.arith))
-      self.assertTrue(a3 == goto(set([Item('T', 0, 2), Item('F', 0, 0), Item('F', 1, 0),]), 'F', self.arith))
+      self.assertTrue(a1 == goto(set([LR0(self.StartExtendedSymbol, 0, 1), LR0('E', 0, 1)]), '+', self.arith))
+      self.assertTrue(a2 == goto(set([LR0('E', 0, 0)]), 'E', self.arith))
+      self.assertTrue(a3 == goto(set([LR0('T', 0, 2), LR0('F', 0, 0), LR0('F', 1, 0),]), 'F', self.arith))
 
 
    def test_canonical_collection_arith(self):
-      collection = canonical_collection(self.arith, Item(self.StartExtendedSymbol, 0, 0))
+      collection = canonical_collection(self.arith, LR0(self.StartExtendedSymbol, 0, 0))
       self.assertTrue(len(collection) == 12)
 
       states = frozenset([
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 0),
-         Item('E', 0, 0), Item('E', 1, 0),
-         Item('T', 0, 0), Item('T', 1, 0),
-         Item('F', 0, 0), Item('F', 1, 0), ]),
+         LR0(self.StartExtendedSymbol, 0, 0),
+         LR0('E', 0, 0), LR0('E', 1, 0),
+         LR0('T', 0, 0), LR0('T', 1, 0),
+         LR0('F', 0, 0), LR0('F', 1, 0), ]),
       
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 1),
-         Item('E', 0, 1), ]),
+         LR0(self.StartExtendedSymbol, 0, 1),
+         LR0('E', 0, 1), ]),
 
       frozenset([
-         Item('E', 1, 1),
-         Item('T', 0, 1), ]),
+         LR0('E', 1, 1),
+         LR0('T', 0, 1), ]),
 
       frozenset([
-         Item('F', 1, 1), ]),
+         LR0('F', 1, 1), ]),
 
       frozenset([
-         Item('F', 0, 1),
-         Item('E', 0, 0), Item('E', 1, 0),
-         Item('T', 0, 0), Item('T', 1, 0),
-         Item('F', 0, 0), Item('F', 1, 0), ]),
+         LR0('F', 0, 1),
+         LR0('E', 0, 0), LR0('E', 1, 0),
+         LR0('T', 0, 0), LR0('T', 1, 0),
+         LR0('F', 0, 0), LR0('F', 1, 0), ]),
 
       frozenset([
-         Item('T', 1, 1), ]),
+         LR0('T', 1, 1), ]),
          
       frozenset([
-         Item('E', 0, 2),
-         Item('T', 0, 0), Item('T', 1, 0),
-         Item('F', 0, 0), Item('F', 1, 0), ]),
+         LR0('E', 0, 2),
+         LR0('T', 0, 0), LR0('T', 1, 0),
+         LR0('F', 0, 0), LR0('F', 1, 0), ]),
 
       frozenset([
-         Item('T', 0, 2),
-         Item('F', 0, 0), Item('F', 1, 0), ]),
+         LR0('T', 0, 2),
+         LR0('F', 0, 0), LR0('F', 1, 0), ]),
 
       frozenset([
-         Item('E', 0, 1),
-         Item('F', 0, 2), ]),
+         LR0('E', 0, 1),
+         LR0('F', 0, 2), ]),
 
       frozenset([
-         Item('E', 0, 3),
-         Item('T', 0, 1), ]),
+         LR0('E', 0, 3),
+         LR0('T', 0, 1), ]),
       
       frozenset([
-         Item('T', 0, 3), ]),
+         LR0('T', 0, 3), ]),
 
       frozenset([
-         Item('F', 0, 3), ]),
+         LR0('F', 0, 3), ]),
       ])
 
       self.assertTrue(states == collection)
 
    def test_canonical_collection_lr_value(self):
-      collection = canonical_collection(self.lrvalue, Item(self.StartExtendedSymbol, 0, 0))
+      collection = canonical_collection(self.lrvalue, LR0(self.StartExtendedSymbol, 0, 0))
       self.assertTrue(len(collection) == 10)
 
       states = frozenset([
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 0),
-         Item('S', 0, 0), Item('S', 1, 0),
-         Item('L', 0, 0), Item('L', 1, 0),
-         Item('R', 0, 0), ]),
+         LR0(self.StartExtendedSymbol, 0, 0),
+         LR0('S', 0, 0), LR0('S', 1, 0),
+         LR0('L', 0, 0), LR0('L', 1, 0),
+         LR0('R', 0, 0), ]),
       
       frozenset([
-         Item(self.StartExtendedSymbol, 0, 1), ]),
+         LR0(self.StartExtendedSymbol, 0, 1), ]),
       
       frozenset([
-         Item('S', 0, 1),
-         Item('R', 0, 1), ]),
+         LR0('S', 0, 1),
+         LR0('R', 0, 1), ]),
       
       frozenset([
-         Item('S', 1, 1), ]),
+         LR0('S', 1, 1), ]),
       
       frozenset([
-         Item('L', 0, 1),
-         Item('L', 0, 0), Item('L', 1, 0),
-         Item('R', 0, 0), ]),
+         LR0('L', 0, 1),
+         LR0('L', 0, 0), LR0('L', 1, 0),
+         LR0('R', 0, 0), ]),
       
       frozenset([
-         Item('L', 1, 1), ]),
+         LR0('L', 1, 1), ]),
       
       frozenset([
-         Item('S', 0, 2),
-         Item('L', 0, 0), Item('L', 1, 0),
-         Item('R', 0, 0), ]),
+         LR0('S', 0, 2),
+         LR0('L', 0, 0), LR0('L', 1, 0),
+         LR0('R', 0, 0), ]),
       
       frozenset([
-         Item('L', 0, 2), ]),
+         LR0('L', 0, 2), ]),
       
       frozenset([
-         Item('R', 0, 1), ]),
+         LR0('R', 0, 1), ]),
 
       frozenset([
-         Item('S', 0, 3), ]),
+         LR0('S', 0, 3), ]),
       ])
 
       self.assertTrue(states == collection)

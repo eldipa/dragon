@@ -1,9 +1,6 @@
 import collections
 from dragon.lr.driver import Driver
-from dragon.util import follow
-
-from dragon.lr.lookahead_compress import LookAheadCompress
-from dragon.lr.lookahead import LookAhead
+from dragon.lr.item import LR1, LALR
 
 def closure(kernel_items, grammar):
    '''For each given item A -> ab*B, collect all items B -> *cd
@@ -162,7 +159,7 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
 def generate_spontaneously_lookaheads(grammar, start_item, handle_shift_reduce = True):
    goto_table = collections.defaultdict(dict)
    
-   lalr_start_item = LookAheadCompress(start_item.sym_production, start_item.alternative, start_item.position)
+   lalr_start_item = LALR(start_item.sym_production, start_item.alternative, start_item.position)
    lalr_start_item.add_new(grammar.EOF)
    kernels_lalr = kernel_collection(grammar, lalr_start_item)
 
@@ -174,7 +171,7 @@ def generate_spontaneously_lookaheads(grammar, start_item, handle_shift_reduce =
 
    for id_, kernels in ids_kernes_lalr.iteritems():
       for item_lalr in kernels:
-         closure_lr1 = closure(set([LookAhead(item_lalr.sym_production, item_lalr.alternative, item_lalr.position, grammar.PROBE)]), grammar)
+         closure_lr1 = closure(set([LR1(item_lalr.sym_production, item_lalr.alternative, item_lalr.position, grammar.PROBE)]), grammar)
 
          for item_lr1 in closure_lr1:
             next_symbol = item_lr1.next_symbol(grammar)
@@ -186,7 +183,7 @@ def generate_spontaneously_lookaheads(grammar, start_item, handle_shift_reduce =
             goto_set_id = goto_table[id_][next_symbol]
             goto_set = ids_kernes_lalr[goto_set_id]
 
-            item_lalr_from_shifted = LookAheadCompress(item_lr1_shifted.sym_production, item_lr1_shifted.alternative, item_lr1_shifted.position)
+            item_lalr_from_shifted = LALR(item_lr1_shifted.sym_production, item_lr1_shifted.alternative, item_lr1_shifted.position)
             assert item_lalr_from_shifted in goto_set
             
             singleton = (goto_set - (goto_set - {item_lalr_from_shifted}))
