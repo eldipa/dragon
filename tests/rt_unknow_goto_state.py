@@ -2,7 +2,8 @@ import unittest
 import dragon.grammar as grammar
 from StringIO import StringIO
 import re
-from dragon.lr.util import build_parsing_table, canonical_collection
+from dragon.lr.builder import build_parsing_table
+from dragon.lr.util import canonical_collection
 from dragon.lr.driver import Driver
 from dragon.driver import Lexer
 from dragon.lr.item import LR0

@@ -1,6 +1,6 @@
 import unittest
 import dragon.grammar as grammar
-from dragon.lr.util import generate_spontaneously_lookaheads, propagate_lookaheads
+from dragon.lr.builder import generate_spontaneously_lookaheads, propagate_lookaheads
 from dragon.lr.item import LR0
 
 class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):

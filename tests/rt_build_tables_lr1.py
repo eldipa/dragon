@@ -1,6 +1,6 @@
 import unittest
 import dragon.grammar as grammar
-from dragon.lr.util import build_parsing_table, ReduceReduce, ShiftReduce
+from dragon.lr.builder import build_parsing_table, ReduceReduce, ShiftReduce
 from dragon.lr.item import LR1
 
 class RegresionTestBuildActionGotoTableForLR1Grammar(unittest.TestCase):
