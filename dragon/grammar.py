@@ -117,15 +117,14 @@ class Grammar:
       assert self.is_empty_rule(self[symbol][-1])
 
    
-   def augment(self, symbol_start, semantic_action = None):
+   def augment(self, symbol_start):
       '''Augments a grammar selecting a start symbol and adding the rule
             self.START -> symbol_start
 
-         with a optional semantic action associated to it.
          The grammar can be augment only once.'''
       assert not symbol_start in self._productions
       assert not self.is_augment()
-      self.add_rule(Grammar.START, (symbol_start, ) + ((semantic_action,) if semantic_action else ()))
+      self.add_rule(Grammar.START, (symbol_start, ))
 
    def start_symbol(self):
       '''Returns the 'start_symbol' which form the rule
