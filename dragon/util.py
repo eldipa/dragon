@@ -73,8 +73,8 @@ def first(aGrammar, symbols):
    return frozenset(first_set)
 
 
-def follow(aGrammar, symbol, seen = None):
-   '''Returns the set of terminal that 'follow' the nonterminal symbol 'symbol'.
+def follow(aGrammar, symbol, _seen = None):
+   '''Returns the set of terminals that 'follow' the nonterminal symbol 'symbol'.
       
       Let be X the nonterminal symbol.
       If A -> aX, the set 'follow of A' is in 'follow of X'
@@ -83,13 +83,16 @@ def follow(aGrammar, symbol, seen = None):
       If X is the 'start symbol', add the terminal 'End Of File' to the 'follow of X'.
 
       Precondition: the grammar must be a grammar augmented.
+
+      The optional parameter '_seen' is a special parameter for internal use only.
+      This algorithm works in a recursive way, for both left and right recursive grammars.
       '''
 
    target = symbol
 
    follow_set = set()
-   seen = seen if seen else set()
-   seen.add(symbol)
+   _seen = _seen if _seen else set()
+   _seen.add(symbol)
    if aGrammar.is_start_symbol(target):
       follow_set.add(aGrammar.EOF)
 
@@ -104,8 +107,8 @@ def follow(aGrammar, symbol, seen = None):
                   terminals = first(aGrammar, tail)
       
                more_terminals = ()
-               if (not tail or aGrammar.EMPTY in terminals) and s not in seen:
-                  more_terminals = follow(aGrammar, s, seen)
+               if (not tail or aGrammar.EMPTY in terminals) and s not in _seen:
+                  more_terminals = follow(aGrammar, s, _seen)
 
                follow_set.update(more_terminals)
                follow_set.update(set(terminals) - set([aGrammar.EMPTY]))

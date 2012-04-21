@@ -16,7 +16,7 @@ class Grammar:
             self.START -> start_symbol
          In this case, the grammar is 'augmented'.
          This property is required by some algorithms so if the 'start_symbol' is None,
-         you can set this symbol using the 'augment' method after build the grammar.
+         you must set this symbol using the 'augment' method after build the grammar.
 
          The initial set of terminals can be extended calling 'add_terminal' method. So,
          it is not necessary to provide the set in the same time that 
@@ -43,7 +43,7 @@ class Grammar:
          If 'consume' is True, then 'count' values will be removed from the stack.
          If it es False, none is removed. By default, 'consume' is True.
 
-         In any case, the value returned by de semantic action is pushed in the stack
+         In any case, the value returned by the semantic action is pushed in the stack
          of synthesized values, even if the action return None.
          '''
 
