@@ -2,6 +2,19 @@ from dragon.driver import Driver as DriverInterface
 
 class Driver(DriverInterface):
    def __init__(self, action_table, goto_table, start_state):
+      '''The driver is in charge of moving between the states (from the start stage)
+         using the goto table. In each state a decision must be taken, given a token
+         readed by the lexer, the parser must...
+            ...continue asking for tokens to the lexer (called a 'shift' action).
+            ...stop and try to figure out what rule in the grammar is in and possibly 
+               execute some semantic action (called a 'reduce' action)
+            ...stop and finish the parser, because a end of file condition was reached 
+               (called an 'accept action')
+            ...stop with a error because the token readed is unexpected and there is no
+               other action to do.
+
+         The action to do in each state is described in the action table.
+      '''
       self._action_table = action_table
       self._goto_table = goto_table
       self._start_state = start_state
