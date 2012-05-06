@@ -1,3 +1,10 @@
+#########################################################################
+#                                                                       #
+#                        This work is licensed under a                  #
+#   CC BY-SA        Creative Commons Attribution-ShareAlike             #
+#                           3.0 Unported License.                       #
+#                                                                       #
+#########################################################################
 
 def first(aGrammar, symbols):
    '''Finds the 'first' set of terminals that there are derived from 'symbols'.

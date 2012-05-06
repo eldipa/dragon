@@ -1,3 +1,10 @@
+#########################################################################
+#                                                                       #
+#                        This work is licensed under a                  #
+#   CC BY-SA        Creative Commons Attribution-ShareAlike             #
+#                           3.0 Unported License.                       #
+#                                                                       #
+#########################################################################
 import collections
 from dragon.lr.driver import Driver
 from dragon.lr.item import LR1, LALR

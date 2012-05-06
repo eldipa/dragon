@@ -1,3 +1,10 @@
+#########################################################################
+#                                                                       #
+#                        This work is licensed under a                  #
+#   CC BY-SA        Creative Commons Attribution-ShareAlike             #
+#                           3.0 Unported License.                       #
+#                                                                       #
+#########################################################################
 
 def closure(kernel_items, grammar):
    '''Returns the set of items that represent the same position in the grammar.
