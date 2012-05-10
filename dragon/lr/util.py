@@ -14,9 +14,9 @@ def closure(kernel_items, grammar):
       
       This means that the item A -> ab*B is equivalent to B -> *cd.
       
-      Precondition: the kernel_items are expected to be a iterable of items of the
-      form A -> a*b where 'a' is a symbol, terminal or nonterminal and 'b' is another 
-      symbol and that may exist or not.'''
+      Precondition: the kernel_items are expected to be a iterable of items 
+      of the form A -> a*b where 'a' is a symbol, terminal or nonterminal and 
+      'b' is another symbol and that may exist or not.'''
    to_process = set(kernel_items)
    finished = set()
 
@@ -32,16 +32,19 @@ def closure(kernel_items, grammar):
 
 
 def goto(items, symbol, grammar, only_kernel = False):
-   '''For each given item A -> a*Bb, collect all items A -> aB*b where B == 'symbol'.
+   '''For each given item A -> a*Bb, collect all items A -> aB*b where 
+      B == 'symbol'.
       Then return the closure of the collected set.'''
-   to_process = frozenset([i.item_shifted(grammar) for i in items if i.next_symbol(grammar) == symbol])
+   to_process = frozenset([i.item_shifted(grammar) for i in items 
+                                       if i.next_symbol(grammar) == symbol])
    return closure(to_process, grammar) if not only_kernel else to_process
 
 
 def canonical_collection(grammar, start_item):
    '''The collection represents a collections of 'states' of the parser where
       each 'state' is a set of items.
-      The algorithm starts from an item 'seed' and builds all of the rest of sets.
+      The algorithm starts from an item 'seed' and builds all of the rest of 
+      sets.
    '''
    start_set = frozenset([start_item])
    collection = set()
@@ -60,8 +63,8 @@ def canonical_collection(grammar, start_item):
    return frozenset(collection)
 
 def kernel_collection(grammar, start_item):
-   '''Similar to 'canonical_collection' except that the returned collection is made
-      of kernels items. 
+   '''Similar to 'canonical_collection' except that the returned collection 
+      is made of kernels items. 
       All the nonkernel items are removed to improve the memory consume.
       '''
    start_set = frozenset([start_item])

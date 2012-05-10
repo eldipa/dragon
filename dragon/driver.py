@@ -22,7 +22,11 @@ class Driver(object):
    class UnexpectedToken(Exception):
       def __init__(self, token_readed, expecteds):
          Exception.__init__(self)
-         self.msg = "Unexpected token of type '%s' and value '%s'.\nExpected {  %s  } types of tokens." % (token_readed[0], token_readed[1], " ".join("'%s'" % e for e in expecteds))
+         self.msg = "Unexpected token of type '%s' and value '%s'.\
+\nExpected {  %s  } types of tokens." % (
+      token_readed[0], 
+      token_readed[1], 
+      " ".join("'%s'" % e for e in expecteds))
 
       def __str__(self):
          return self.msg

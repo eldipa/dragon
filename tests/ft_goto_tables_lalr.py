@@ -14,11 +14,11 @@ class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
       
       self.StartExtendedSymbol = grammar.Grammar.START
       
-      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, LR0(self.lrvalue.START, 0, 0), False)
+      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, LR0(self.lrvalue.START, 0, 0))
 
    def test_kernel_collection_lalr(self):
       collection = self.kernels_lalr
-      propagate_lookaheads(self.lrvalue, collection)
+      propagate_lookaheads(collection)
       self.assertTrue(len(collection) == 7)
       
       expecteds = [
