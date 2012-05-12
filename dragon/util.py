@@ -1,3 +1,7 @@
+'''This module contains the two basic tools for parsing called First and
+   Follow functions.
+   See the documentation of each one.
+   '''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #

@@ -1,3 +1,5 @@
+'''See the documentation of the class Grammar in this package.'''
+
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -25,6 +27,15 @@ import itertools
 from collections import defaultdict 
 
 class Grammar(object):
+   '''Represents the grammar of the language to parse. This include syntactic
+      constructions and semantic actions.
+      The class contains three groups of methods. There is a group to add new
+      syntactic rules and optional semantic actions.
+      The second group are test methods and iterators to see what rules are
+      in the grammar.
+      And in the last group, there are a set of methods to check the integrity of
+      the grammar.
+   '''
    EMPTY = "<<e>>"
    START = "<<S>>"
    EOF = "<<$>>"

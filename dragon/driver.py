@@ -1,3 +1,10 @@
+'''This module contains two interfaces, Lexer and Driver and these contain
+   documentation only. 
+   Python is a dynamic language so its not necessary inherit from these 
+   classes.
+   However it is required that your classes have the same interface.
+'''
+
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -6,7 +13,6 @@
 #                                                                       #
 #########################################################################
 
-class Lexer(object):
 ###############################################################################
 #                                                                             #
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS        #
@@ -22,6 +28,8 @@ class Lexer(object):
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.               #
 #                                                                             #
 ###############################################################################
+class Lexer(object):
+   '''See the tokenizer method.'''
    def tokenizer(self):
       '''Return a iterable or generator of all tokens.
          Each token is a tuple with at least one value, the terminal id. 
@@ -30,11 +38,20 @@ class Lexer(object):
 
 
 class Driver(object):
+   '''See the parse method.'''
    def parse(self, lexer):
+      '''This will extract tokens from the lexer and try to parse the input.
+         The lexer must implement the Lexer interface.'''
       raise NotImplementedError
 
 
    class UnexpectedToken(Exception):
+      '''This exception will be raised by the Driver when an unexpected 
+         token will be readed.
+         The exception contains some basic data to guess what was wrong.
+         The particular Driver implementation can include more specific
+         data for even try to continue the parse.
+         '''
       def __init__(self, token_readed, expecteds):
          Exception.__init__(self)
          self.msg = "Unexpected token of type '%s' and value '%s'.\

@@ -1,3 +1,9 @@
+'''This package contains the basic tools to build a parser generator including
+   a Grammar and some utility functions.
+   The more specified algorithms are implemented in subpackages.
+   
+   At this time, a subset of the LR parser family were implemented.
+'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
