@@ -1,3 +1,6 @@
+'''This module contains some useful implementations of the concept of Item.
+   See the class Item.
+'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -24,6 +27,8 @@
 from dragon.util import follow, first
 
 class Item(object):
+   '''See __init__'''
+
    def __init__(self, sym_production, alternative, position):
       '''A item represent a position in the parser. This is codified according
          the 'symbol' of the productions, the number of the production or 
@@ -93,6 +98,7 @@ class Item(object):
 
 
 class LR0(Item):
+   '''See __init__ of the Item class.'''
    def __init__(self, sym_production, alternative, position):
       Item.__init__(self, sym_production, alternative, position)
 
@@ -122,6 +128,10 @@ class LR0(Item):
 
 
 class LR1(LR0):
+   '''This implements an Item for the LR1 parsers. 
+      See __init__ of the Item class for a description of Item and the
+      documentation of the method next_items.
+      '''
    def __init__(self, sym_production, alternative, position, lookahead):
       LR0.__init__(self, sym_production, alternative, position)
       self.lookahead = lookahead
@@ -161,6 +171,7 @@ class LR1(LR0):
    
 
 class LALR(LR0):
+   '''See __init__'''
    def __init__(self, sym_production, alternative, position):
       '''The item start as a LR0 item but can learn and register the lookaheads
          as a LR1. In fact, the LALR item can register more than one lookahead 

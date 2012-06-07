@@ -1,3 +1,6 @@
+'''This package contains a subset of the LR family. 
+   This includes the LR(0), LR(1) y the LALR parsers.
+   '''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #

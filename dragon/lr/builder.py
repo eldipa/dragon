@@ -1,3 +1,6 @@
+'''This module contains functions to build the states used by a drver to parse.
+   See the function build_parsing_table in this module.
+   '''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -25,55 +28,10 @@ import collections
 from dragon.lr.driver import Driver
 from dragon.lr.item import LR1, LALR
 from dragon.lr.util import kernel_collection, closure, goto
-
-class LRConflict(Exception):
-   def __init__(self, msg):
-      Exception.__init__(self)
-      self.msg = msg
-
-   def __str__(self):
-      return str(self.msg)
-
-class ReduceReduce(LRConflict):
-   def __init__(self, new, old, sym):
-      LRConflict.__init__(self, "A Reduce-Reduce conflict discovered during \
-process '%s' terminal. This is because there are two productions \
-that are ready to be reduced at the same time, but only one of \
-them can be effectively reduced. So, which production must be \
-reduced?\nThese are the conflicting productions:\n%s\n%s" % (
-               sym, 
-               new.production_str(), 
-               old.production_str()))
-
-class ShiftReduce(LRConflict):
-   def __init__(self, new, old, sym):
-      LRConflict.__init__(self, "A Shift-Reduce conflict discovered during \
-process '%s' terminal. This is because there are two productions, \
-one that is ready to be reduced and the other can still shift \
-more terminals at the same time. So, which action must be choosed? \
-By default, it's choosed the shift action.\nThese are the \
-conflicting productions:\n%s\n%s" % (
-               sym, 
-               new.production_str(), 
-               old.production_str()))
-
-def handler_conflict(new_action, old_action, next_symbol, handle_shift_reduce):
-   is_new_reduce = "Reduce" in str(new_action)
-   is_old_reduce = "Reduce" in str(old_action)
-   
-   if is_new_reduce and is_old_reduce:
-      raise ReduceReduce(new_action, old_action, next_symbol)
-   elif not is_new_reduce and not is_old_reduce:
-      print "Shift-Shift conflict."
-      raise KeyError(next_symbol)
-   else:
-      if handle_shift_reduce:
-         return new_action if not is_new_reduce else old_action
-      else:
-         raise ShiftReduce(new_action, old_action, next_symbol)
-
+from dragon.lr.conflict import handler_conflict
 
 def populate_goto_table_from_state(grammar, state_set, goto_table):
+   '''Builds the Goto table.'''
    for anysymbol in grammar.iter_on_all_symbols():
       next_state = goto(state_set, anysymbol, grammar)
       if next_state:
@@ -82,6 +40,7 @@ def populate_goto_table_from_state(grammar, state_set, goto_table):
 # pylint: disable=C0103
 def populate_action_table_from_state(grammar, state_set, 
       action_table, handle_shift_reduce):
+   '''Builds the Action table.'''
    for item in state_set:
       next_symbol = item.next_symbol(grammar)
       if item.sym_production == grammar.START and item.position == 1: 
@@ -136,7 +95,22 @@ def populate_action_table_from_state(grammar, state_set,
 
 
 def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
-   '''Preconditions: the grammar must be already processed.'''
+   '''Builds the Action and Goto tables for be used by a driver returning
+      these tables and the id of the start state, where the driver will use
+      as a point of start to parse.
+      
+      See the documentation of handler_conflict function for more info with
+      respect the handle_shift_reduce parameter.
+
+      The start_item can be an instance of Item (see the module item).
+      This works well with LR0 and LR1 items, but with LALR items, the
+      algorithm used is the build_parsing_table_lalr (see that function, in
+      this module)
+
+      Preconditions: the grammar must be already processed.'''
+   if isinstance(start_item, LALR):
+      return build_parsing_table_lalr(grammar, start_item, handle_shift_reduce)
+
    action_table = collections.defaultdict(dict)
    goto_table = collections.defaultdict(dict)
    kernels = kernel_collection(grammar, start_item)
@@ -163,6 +137,14 @@ def build_parsing_table(grammar, start_item, handle_shift_reduce = True):
 # pylint: disable=C0103
 # pylint: disable=R0914
 def generate_spontaneously_lookaheads(grammar, start_item):
+   '''Builds a LR0 table using as a seed the start_item and then tries to 
+      determinate what terminals are lookahead of each item (in which case, 
+      these lookaheads are spontaneously generated), building initially the
+      LALR items (they are very similar to the LR0 item but can be modified
+      adding to him lookaheads, see the documentation of LALR class in the 
+      item module).
+      '''
+
    goto_table = collections.defaultdict(dict)
    
    lalr_start_item = LALR(
@@ -216,6 +198,11 @@ def generate_spontaneously_lookaheads(grammar, start_item):
    return kernels_lalr, goto_table
 
 def propagate_lookaheads(kernels_lalr):
+   '''The spontaneously generated terminals are propagated from one item to 
+      other. 
+      Initially, the items are LALR items, but with few or none lookaheads 
+      terminals. This function completes these LALR items.
+      '''
    changes = True
    while changes:
       changes = False
@@ -228,6 +215,20 @@ def propagate_lookaheads(kernels_lalr):
          item_lalr.close()
 
 def build_parsing_table_lalr(grammar, start_item, handle_shift_reduce = True):
+   '''Builds a LALR table, first builds a LR0 table using as a seed the 
+      start_item and then tries to determinate what terminals are lookahead of 
+      each item (in which case, these lookaheads are spontaneously generated)
+      In a second stage, the spontaneously generated terminals are propagated
+      from one item to other.
+      When no more terminals propagated, the algorithm builds a kernel
+      of items LALR.
+      With this, the function returns the action and goto tables used by the
+      driver.
+
+      See the documentation of handler_conflict function for more info with
+      respect the handle_shift_reduce parameter.
+   '''
+
    action_table = collections.defaultdict(dict)
    start_set_hash = None
    

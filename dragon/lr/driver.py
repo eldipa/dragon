@@ -1,3 +1,4 @@
+'''See the documentation of the Driver class in this package.'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -24,6 +25,7 @@
 from dragon.driver import Driver as DriverInterface
 
 class Driver(DriverInterface):
+   '''See the __init__ method.'''
    def __init__(self, action_table, goto_table, start_state):
       '''The driver is in charge of moving between the states (from the start 
          stage) using the goto table. In each state a decision must be taken, 
@@ -70,6 +72,7 @@ class Driver(DriverInterface):
 
 
    class Shift(object):
+      # pylint: disable=C0111
       def __init__(self, state_to_shift, sym_production, production):
          self._state_to_shift = state_to_shift
          self._production_str = sym_production + " -> " + " ".join(production)
@@ -98,6 +101,7 @@ class Driver(DriverInterface):
 
 
    class Reduce(object):
+      # pylint: disable=C0111
       def __init__(self, sym_production, production, semantic_definition, 
                                                          empty_production):
          self._sym_production = sym_production
@@ -153,6 +157,7 @@ class Driver(DriverInterface):
 
 
    class Accept(object):
+      # pylint: disable=C0111
       def eval(self, _stack_of_states, _goto_table, _synthesized):
          pass
       

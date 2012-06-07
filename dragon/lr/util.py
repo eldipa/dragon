@@ -1,3 +1,5 @@
+'''This module contains some useful functions used by the generator 
+   of LR parser.'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
