@@ -2,8 +2,8 @@ from distutils.core import setup
 
 setup(
       name="dragon",
-      version="1.0.rc",    #TODO
-      description="A generator of parsers.",
+      version="1.0.0",
+      description="A generator of parsers LR(0), LR(1) and LALR",
       author="Di Paola Martin Pablo",
       author_email="martinp.dipaola@gmail.com",
       url="",  #TODO
