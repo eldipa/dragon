@@ -5,7 +5,7 @@ import os
 
 class QualityAssuranceLicense(unittest.TestCase):
    def setUp(self):
-      self.count = 35  #The first N lines of each file to search the license
+      self.count = 45  #The first N lines of each file to search the license
       self.basepath = Path.join(Path.dirname(__file__), "..")
       self.src_basepath = Path.join(self.basepath, "dragon")
 
