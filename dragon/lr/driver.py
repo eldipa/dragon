@@ -43,7 +43,7 @@ class Driver(DriverInterface):
          synthesized.append(token[1])
 
 
-   class Shift:
+   class Shift(object):
       def __init__(self, state_to_shift, sym_production, production):
          self._state_to_shift = state_to_shift
          self._production_str = sym_production + " -> " + " ".join(production)
@@ -63,7 +63,7 @@ class Driver(DriverInterface):
          return isinstance(other, Driver.Shift) and other._state_to_shift == self._state_to_shift
 
 
-   class Reduce:
+   class Reduce(object):
       def __init__(self, sym_production, production, semantic_definition, empty_production):
          self._sym_production = sym_production
          self._len_production = len(production)
@@ -103,7 +103,7 @@ class Driver(DriverInterface):
          return isinstance(other, Driver.Reduce) and other._sym_production == self._sym_production and other._len_production == self._len_production
 
 
-   class Accept:
+   class Accept(object):
       def do(self, stack_of_states, goto_table, synthesized):
          pass
       

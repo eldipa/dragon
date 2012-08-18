@@ -1,7 +1,7 @@
 import itertools
 from collections import defaultdict 
 
-class Grammar:
+class Grammar(object):
    EMPTY = "<<e>>"
    START = "<<S>>"
    EOF = "<<$>>"

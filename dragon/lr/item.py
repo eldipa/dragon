@@ -1,7 +1,7 @@
 import collections
 from dragon.util import follow, first
 
-class Item:
+class Item(object):
    def __init__(self, sym_production, alternative, position):
       '''A item represent a position in the parser. This is codified according the
          'symbol' of the productions, the number of the production or 'alternative'

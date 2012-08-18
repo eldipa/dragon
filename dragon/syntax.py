@@ -1,6 +1,6 @@
 from grammar import Grammar
 
-class Syntax:
+class Syntax(object):
    def __init__(self, start_symbol, terminals = None):
       '''Creates the syntax of some language which grammar is defined
          by the calls to the methods of this class.

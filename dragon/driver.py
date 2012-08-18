@@ -1,5 +1,5 @@
 
-class Lexer:
+class Lexer(object):
    def tokenizer(self):
       '''Return a iterable or generator of all tokens.
          Each token is a tuple with at least one value, the terminal id. 
@@ -7,7 +7,7 @@ class Lexer:
       raise NotImplementedError
 
 
-class Driver:
+class Driver(object):
    def parse(self, lexer):
       raise NotImplementedError
 
