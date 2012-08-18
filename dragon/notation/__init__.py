@@ -13,7 +13,8 @@
       import mmap
       def from(filename, start_symbol):
          with open(filename, 'r') as source:
-            iomap_string = mmap.mmap(source.fileno(), length=0, access=mmap.ACCESS_READ)
+            iomap_string = mmap.mmap(source.fileno(), length=0, 
+                                     access=mmap.ACCESS_READ)
             return from_string(iomap_string, start_symbol)
 '''
 #########################################################################

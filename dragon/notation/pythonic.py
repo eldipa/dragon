@@ -22,13 +22,19 @@
 #                                                                             #
 ###############################################################################
 from ast import NodeTransformer, parse, Name, Tuple, List, Set, Str, Subscript
-from ast import Dict, Ellipsis, copy_location, fix_missing_locations
+# pylint: disable=W0622
+from ast import Ellipsis
+from ast import Dict, copy_location, fix_missing_locations
 from ast import BinOp, BitOr, Load, Invert
 from parser import ParserError
 from copy import deepcopy
-from dragon.grammar import Grammar
 from dragon.syntax import Syntax
 import mmap
+
+
+# pylint: disable=W0212
+# pylint: disable=C0103
+# pylint: disable=R0201
 
 def _visit_decorator(visit_func):
    def wrapper(self, node):
@@ -83,6 +89,7 @@ class NotationASTTransformer(NodeTransformer):
    __parsed_tuple = parse("(1,)", __filename_parsed_expression, mode='eval')
 
    def __init__(self):
+      NodeTransformer.__init__(self)
       self._production_name = None
       self._hint_name = ""
       self._counter = 0
@@ -249,7 +256,9 @@ class NotationASTTransformer(NodeTransformer):
       '''The expression can not be an empty {} choice.
          The 'dict' expressions like {a:b, c:d} are not allowed.
          '''
-      if hasattr(node, '_already_process'): return node
+      if hasattr(node, '_already_process'): 
+         return node
+
       if not node.keys:
          raise NotationASTTransformer.ParserASTError(node, 
                "Invalid '{}' expression. A empty 'choices' is not allowed.")
@@ -343,4 +352,4 @@ def from_string(string, start_symbol, **semantic_objets):
 def from_file(filename, start_symbol, **semantic_objets):
    with open(filename, 'r') as source:
       iomap = mmap.mmap(source.fileno(), length=0, access=mmap.ACCESS_READ)
-      return from_string(iomap, start_symbol, semantic_objets)
+      return from_string(iomap, start_symbol, **semantic_objets)

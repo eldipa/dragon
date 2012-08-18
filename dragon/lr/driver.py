@@ -41,6 +41,7 @@ class Driver(DriverInterface):
 
          The action to do in each state is described in the action table.
       '''
+      DriverInterface.__init__(self)
       self._action_table = action_table
       self._goto_table = goto_table
       self._start_state = start_state
