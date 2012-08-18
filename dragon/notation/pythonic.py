@@ -69,6 +69,12 @@ class NotationASTTransformer(NodeTransformer):
 
    @_visit_decorator
    def visit_Str(self, node):
+      '''Interprets literals strings like "foo" or 'bar' as terminals. The 
+         meaning of the terminal is given by the lexer, so ":" can significate 
+         a colon ":" or anything else.
+
+         Empty strings are not allowed.
+         '''
       if not node.s:
          raise NotationASTTransformer.ParserASTError(node, "Invalid '' expression. Literal strings must be non-empty.")
       
@@ -84,6 +90,11 @@ class NotationASTTransformer(NodeTransformer):
 
    @_visit_decorator
    def visit_Tuple(self, node):
+      '''Interprets a tuple (a, b, c) like an expression (rule) 
+         'a' follow by 'b' and then, follow by 'c'. 
+
+         Empty tuples are not allowed.
+         '''
       if not node.elts:
          raise NotationASTTransformer.ParserASTError(node, "Invalid '()' expression. A empty 'rule' is not allowed.")
 
@@ -92,6 +103,12 @@ class NotationASTTransformer(NodeTransformer):
       
    @_visit_decorator
    def visit_List(self, node):
+      '''Interprets a list [a, b, c] like an expression (rule) 
+         'a' follow by 'b' and then, follow by 'c' that is optional.
+         This means that the parser can expect "abc" or the empty string.
+
+         Empty lists are not allowed.
+         '''
       if not node.elts:
          raise NotationASTTransformer.ParserASTError(node, "Invalid '[]' expression. A empty 'optional' is not allowed.")
 
@@ -144,6 +161,12 @@ class NotationASTTransformer(NodeTransformer):
 
 
    def visit_BinOp(self, node):
+      '''Interprets a the sequence a | b | c like a set of alternative 
+         expresions 'a' or 'b' or 'c'.
+         But this is only allowed if the operator | is inside of a set
+         { } expression (a 'choice' expression)
+         '''
+
       if isinstance(node.op, BitOr):
          raise NotationASTTransformer.ParserASTError(node, "Invalid '|' expression. The | operator must be between { }, in a 'choice' expression.")
 
@@ -163,6 +186,11 @@ class NotationASTTransformer(NodeTransformer):
 
    @_visit_decorator
    def visit_Set(self, node):
+      '''Interprets a the sequence {a | b | c} like a set of alternative 
+         expresions 'a' or 'b' or 'c' (choices)
+
+         The expression can not be an empty {} or a singleton {a} choice.
+         '''
       if not node.elts:
          raise NotationASTTransformer.ParserASTError(node, "Invalid '{}' expression. A empty 'choices' is not allowed.")
       
@@ -174,6 +202,9 @@ class NotationASTTransformer(NodeTransformer):
       return NotationASTTransformer.__parsed_choice
 
    def visit_Dict(self, node):
+      '''The expression can not be an empty {} choice.
+         The 'dict' expressions like {a:b, c:d} are not allowed.
+         '''
       if hasattr(node, '_already_process'): return node
       if not node.keys:
          raise NotationASTTransformer.ParserASTError(node, "Invalid '{}' expression. A empty 'choices' is not allowed.")
@@ -183,6 +214,13 @@ class NotationASTTransformer(NodeTransformer):
    
    @_visit_decorator
    def visit_Subscript(self, node):
+      '''Only the expression [...] is allowed, meaning that the previous 
+         expression can be repeated one or more times.
+         That is, A[...] can be A, AA, AAA, A...A and 
+                  [A][...] can be A, AA, AAA, A...A or the empty string.
+
+         Other 'subscript' like [1], [1:2] or [1:2:3] are not allowed.
+         '''
       if not isinstance(node.slice, Ellipsis):
          raise NotationASTTransformer.ParserASTError(node, "The only expression valid use the subscript '[...]'. Other subscripts are allowed. ")
       
@@ -194,6 +232,22 @@ class NotationASTTransformer(NodeTransformer):
       return NotationASTTransformer.__parsed_repeat
 
    def visit_Assign(self, node):
+      '''Interprets an assignament as a definition of a new nonterminal symbol.
+         
+         Only can be assigned rules, optionals, choices, nonterminals,
+         terminals and repeated expressions.
+         Valid:
+            A = B, C       meaning  A := B follow by C
+            A = [B, C]     meaning  A := B follow by C or the empty string
+            A = {B | C}    meaning  A := B or C
+            A = B          meaning  A := B (other nonterminal symbol)
+            A = c          meaning  A := c (a terminal symbol)a
+            A = B[...]     meaning  A := B one or more times
+
+         It is not allowed multiples assignaments like A, B = C
+         and in all the cases the name of the symbol (A in the case A=...)
+         must be a valid name.
+         '''
       if len(node.targets) != 1 or not isinstance(node.targets[0], Name):
          raise NotationASTTransformer.ParserASTError(node, "Only one assign 'A = ...' is allowed and 'A' must be a variable with a valid name.")
 
@@ -224,7 +278,6 @@ def _generate_grammar(ast_root, start_symbol):
    root = compile(root, '<string>', 'exec')
    eval(root, {transformer.get_notation_object_name(): notation})
    return notation.as_grammar()
-
 
 
 def from_string(string, start_symbol):
