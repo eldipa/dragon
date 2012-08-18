@@ -43,20 +43,20 @@ class Syntax(object):
       '''Adds a rule 'production_name' -> 'symbols'. 
          See the documentation of 'add_production' of Grammar.
          '''
-      self._grammar.add_production(production_name, self._symbols(symbols))
+      self._grammar.add_rule(production_name, self._symbols(symbols))
       return production_name
 
    def choice(self, alternatives, production_name):
       '''Adds multiples rules, each rule assigned to the same 'production_name'
          symbol, making each one a possible alternative.
-         See the documentation of 'add_production' of Grammar.
+         See the documentation of 'add_rule' of Grammar.
          '''
       if len(alternatives) <= 1:
          raise ValueError('''Expected two or more alternatives, 
                              but received '%s'.''' % str(alternatives))
       
       for alternative in alternatives:
-         self._grammar.add_production(production_name, 
+         self._grammar.add_rule(production_name, 
                                        self._symbols(alternative))
    
       return production_name
@@ -65,17 +65,17 @@ class Syntax(object):
    def repeat(self, symbols, production_name):
       '''Adds a high level rule which derivates in "zero or more" times
          the 'production_name' symbol.'''
-      self._grammar.add_production(production_name, 
+      self._grammar.add_rule(production_name, 
                                     self._symbols(symbols, production_name))
-      self._grammar.add_production(production_name, 
+      self._grammar.add_rule(production_name, 
                                     self._symbols(symbols))
       return production_name
 
    def optional(self, symbols, production_name):
       '''Adds a high level rule which derivates in "zero or one" times
          the 'production_name' symbol.'''
-      self._grammar.add_production(production_name, self._symbols(symbols))
-      self._grammar.add_empty_production(production_name)
+      self._grammar.add_rule(production_name, self._symbols(symbols))
+      self._grammar.add_empty(production_name)
       return production_name
       
    
