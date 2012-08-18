@@ -78,4 +78,7 @@ class Syntax:
       self._grammar.add_empty_production(production_name)
       return production_name
       
-
+   
+   def as_grammar(self):
+      '''Returns a grammar.'''
+      return self._grammar
