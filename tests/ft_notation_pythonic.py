@@ -42,6 +42,9 @@ class FunctionalTestNotationPythonic(unittest.TestCase):
       self.missing_orbit_operator = "A = {'a', 'b'}"
       self.missing_set_operator = "A = 'a' | 'b'"
 
+      self.invoke = "simple = 'a', ~func"
+      self.invoke_complex = "complex = 'a', ~bar.foomethod"
+
    def _validate_AST(self, str_expr, root_node, class_nodes):
       expected = class_nodes
       expected.reverse()
@@ -49,7 +52,7 @@ class FunctionalTestNotationPythonic(unittest.TestCase):
       while deep_search and expected:
          sub_root = deep_search.pop()
          expected_sub_root = expected.pop()
-
+         
          if sub_root.__class__ != expected_sub_root:
             print "Testing %s. Error found %s, but expected %s." % (str_expr, sub_root, expected_sub_root)
 
@@ -456,6 +459,46 @@ class FunctionalTestNotationPythonic(unittest.TestCase):
       self.assertTrue(set(grammar.iter_on_all_symbols()) - set(grammar.iter_nonterminals()) == set(["STRING"]))
       self.assertTrue(len(list(grammar.iter_nonterminals())) == 1 + 1)
       self.assertTrue(set(grammar["s"]) == set([("STRING","s"),("STRING",)]))
+
+   def test_invoke(self):
+      "simple = 'a', ~func"
+      root = parse(self.invoke)
+      class_args = [Tuple, Str, UnaryOp, Invert, Name]
+      self._validate_AST(self.invoke, root, self.class_base + class_args)
+      
+      root = self.transformer.visit(root)
+      self._validate_AST(self.invoke, root, self.class_base + self._call(Tuple, self._call(Str), Name, finish=True))
+   
+      def func():
+         pass
+
+      grammar = self.importer.from_string(self.invoke, "simple", func=func)
+      self.assertTrue(set(grammar.iter_on_all_symbols()) - set(grammar.iter_nonterminals()) == set(["a"]))
+      self.assertTrue(len(list(grammar.iter_nonterminals())) == 1 + 1)
+      self.assertTrue(set(grammar["simple"]) == set([("a",)]))
+      self.assertTrue(grammar.semantic_definition("simple", 0)[2] == func)
+   
+   def test_invoke_complex(self):
+      "complex = 'a', ~bar.foomethod"
+      root = parse(self.invoke_complex)
+      class_args = [Tuple, Str, UnaryOp, Invert, Attribute, Name]
+      #self._validate_AST(self.invoke_complex, root, self.class_base + class_args)
+      
+      root = self.transformer.visit(root)
+      self._validate_AST(self.invoke_complex, root, self.class_base + self._call(Tuple, self._call(Str), Attribute, Name, finish=True))
+ 
+      class Bar:
+         def foomethod(self):
+            pass
+
+
+      bar = Bar()
+
+      grammar = self.importer.from_string(self.invoke_complex, "complex", bar=bar)
+      self.assertTrue(set(grammar.iter_on_all_symbols()) - set(grammar.iter_nonterminals()) == set(["a"]))
+      self.assertTrue(len(list(grammar.iter_nonterminals())) == 1 + 1)
+      self.assertTrue(set(grammar["complex"]) == set([("a",)]))
+      self.assertTrue(grammar.semantic_definition("complex", 0)[2] == bar.foomethod)
 
 if __name__ == '__main__':
    unittest.main()

@@ -85,7 +85,7 @@ class NotationASTTransformer(NodeTransformer):
          if isinstance(node, Name):
             elts[i] = Str(node.id)
             if not node.id.isupper():
-               elts[i]._already_process = True #it's the name of other rule, and it's NOT the name od a terminal like 'NAME' 
+               elts[i]._already_process = True #it's the name of other rule, and it's NOT the name of a terminal like 'NAME' 
 
 
    @_visit_decorator
@@ -178,7 +178,7 @@ class NotationASTTransformer(NodeTransformer):
    
    def visit_UnaryOp(self, node):
       if not isinstance(node.op, Invert):
-         raise NotationASTTransformer.ParserASTError(node, "Invalid unary operator. The only operator valid is '!' to mark semantic actions.")
+         raise NotationASTTransformer.ParserASTError(node, "Invalid unary operator. The only operator valid is '~' to mark semantic actions.")
 
       node.operand._already_process = True
       return node.operand
@@ -268,7 +268,7 @@ class NotationASTTransformer(NodeTransformer):
       return node
 
 
-def _generate_grammar(ast_root, start_symbol):
+def _generate_grammar(ast_root, start_symbol, semantic_objets):
    transformer = NotationASTTransformer()
    root = transformer.visit(ast_root)
    
@@ -276,15 +276,17 @@ def _generate_grammar(ast_root, start_symbol):
 
    fix_missing_locations(root)
    root = compile(root, '<string>', 'exec')
-   eval(root, {transformer.get_notation_object_name(): notation})
+   ctx = {transformer.get_notation_object_name(): notation}
+   ctx.update(semantic_objets)
+   eval(root, ctx)
    return notation.as_grammar()
 
 
-def from_string(string, start_symbol):
+def from_string(string, start_symbol, **semantic_objets):
    root = parse(string)
-   return _generate_grammar(root, start_symbol)
+   return _generate_grammar(root, start_symbol, semantic_objets)
 
-def from_file(filename, start_symbol):
+def from_file(filename, start_symbol, **semantic_objets):
    with open(filename, 'r') as source:
       iomap = mmap.mmap(source.fileno(), length=0, access=mmap.ACCESS_READ)
-      return from_string(iomap, start_symbol)
+      return from_string(iomap, start_symbol, semantic_objets)
