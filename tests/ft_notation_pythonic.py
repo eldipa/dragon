@@ -41,6 +41,7 @@ class FunctionalTestNotationPythonic(unittest.TestCase):
       self.invalid_repeat_expr_str_empty = "A = ''[...]"
       self.missing_orbit_operator = "A = {'a', 'b'}"
       self.missing_set_operator = "A = 'a' | 'b'"
+      self.wrong_value = "A = 'a', ~('a', 'b')"
 
       self.invoke = "simple = 'a', ~func"
       self.invoke_complex = "complex = 'a', ~bar.foomethod"
@@ -233,6 +234,7 @@ class FunctionalTestNotationPythonic(unittest.TestCase):
       self.assertRaisesRegexp(notation.NotationASTTransformer.ParserASTError, "Invalid ''", self.transformer.visit, parse(self.invalid_repeat_expr_str_empty))
       self.assertRaisesRegexp(notation.NotationASTTransformer.ParserASTError, "Invalid '\{.+\}'", self.transformer.visit, parse(self.missing_orbit_operator))
       self.assertRaisesRegexp(notation.NotationASTTransformer.ParserASTError, "Invalid '|'", self.transformer.visit, parse(self.missing_set_operator))
+      self.assertRaisesRegexp(notation.NotationASTTransformer.ParserASTError, "Invalid value for", self.transformer.visit, parse(self.wrong_value))
 
    def test_alternative_in_optional_repeated(self):
       "file_input = [{NEWLINE | stmt}][...]"

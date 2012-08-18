@@ -25,7 +25,7 @@ from ast import NodeTransformer, parse, Name, Tuple, List, Set, Str, Subscript
 # pylint: disable=W0622
 from ast import Ellipsis
 from ast import Dict, copy_location, fix_missing_locations
-from ast import BinOp, BitOr, Load, Invert
+from ast import BinOp, BitOr, Load, Invert, Attribute
 from parser import ParserError
 from copy import deepcopy
 from dragon.syntax import Syntax
@@ -225,7 +225,12 @@ class NotationASTTransformer(NodeTransformer):
       if not isinstance(node.op, Invert):
          raise NotationASTTransformer.ParserASTError(node, 
                "Invalid unary operator. The only operator valid is '~' " 
-               "to mark semantic actions.")
+               "to mark external references.")
+      
+      if not isinstance(node.operand, (Name, Attribute)):
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid value for the unary operator. Names or Attributes are "
+               "allowed, like ~foo or ~foo.bar.")
 
       node.operand._already_process = True
       return node.operand
