@@ -21,7 +21,9 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.               #
 #                                                                             #
 ###############################################################################
-from ast import *
+from ast import NodeTransformer, parse, Name, Tuple, List, Set, Str, Subscript
+from ast import Dict, Ellipsis, copy_location, fix_missing_locations
+from ast import BinOp, BitOr, Load, Invert
 from parser import ParserError
 from copy import deepcopy
 from dragon.grammar import Grammar
@@ -35,7 +37,8 @@ def _visit_decorator(visit_func):
          return node
       call_node = deepcopy(visit_func(self, node).body)
       node._already_process = True
-      call_node.args[0] = node if not isinstance(node, Subscript) else node.value
+      call_node.args[0] = node if not isinstance(node, Subscript)\
+                                 else node.value
       
       if hasattr(node, 'production_name'):
          call_node.args[1] = node.production_name
@@ -62,15 +65,21 @@ class NotationASTTransformer(NodeTransformer):
    
    class ParserASTError(ParserError):
       def __init__(self, node, argument):
-         ParserError.__init__(self, "(Line %i, Col %i) " % (node.lineno, node.col_offset) + argument)
+         ParserError.__init__(self, "(Line %i, Col %i) " % \
+                           (node.lineno, node.col_offset) + argument)
    
    __filename_parsed_expression = '<string>'
    __notation_object = 'Syntax'
-   __parsed_terminal = parse(__notation_object + ".terminal((1,), None)", __filename_parsed_expression, mode='eval')
-   __parsed_rule = parse(__notation_object + ".rule((1,), None)", __filename_parsed_expression, mode='eval')
-   __parsed_optional = parse(__notation_object + ".optional((1,), None)", __filename_parsed_expression, mode='eval')
-   __parsed_choice = parse(__notation_object + ".choice((1,), None)", __filename_parsed_expression, mode='eval')
-   __parsed_repeat = parse(__notation_object + ".repeat((1,), None)", __filename_parsed_expression, mode='eval')
+   __parsed_terminal = parse(__notation_object + ".terminal((1,), None)", 
+                              __filename_parsed_expression, mode='eval')
+   __parsed_rule = parse(__notation_object + ".rule((1,), None)", 
+                              __filename_parsed_expression, mode='eval')
+   __parsed_optional = parse(__notation_object + ".optional((1,), None)", 
+                              __filename_parsed_expression, mode='eval')
+   __parsed_choice = parse(__notation_object + ".choice((1,), None)", 
+                              __filename_parsed_expression, mode='eval')
+   __parsed_repeat = parse(__notation_object + ".repeat((1,), None)", 
+                              __filename_parsed_expression, mode='eval')
    __parsed_tuple = parse("(1,)", __filename_parsed_expression, mode='eval')
 
    def __init__(self):
@@ -93,13 +102,14 @@ class NotationASTTransformer(NodeTransformer):
    @_visit_decorator
    def visit_Str(self, node):
       '''Interprets literals strings like "foo" or 'bar' as terminals. The 
-         meaning of the terminal is given by the lexer, so ":" can significate 
+         meaning of the terminal is given by the lexer, so ":" can significate
          a colon ":" or anything else.
 
          Empty strings are not allowed.
          '''
       if not node.s:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '' expression. Literal strings must be non-empty.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '' expression. Literal strings must be non-empty.")
       
       return NotationASTTransformer.__parsed_terminal
 
@@ -108,7 +118,9 @@ class NotationASTTransformer(NodeTransformer):
          if isinstance(node, Name):
             elts[i] = Str(node.id)
             if not node.id.isupper():
-               elts[i]._already_process = True #it's the name of other rule, and it's NOT the name of a terminal like 'NAME' 
+               #it's the name of other rule, and it's NOT 
+               #the name of a terminal like 'NAME' 
+               elts[i]._already_process = True 
 
 
    @_visit_decorator
@@ -119,7 +131,8 @@ class NotationASTTransformer(NodeTransformer):
          Empty tuples are not allowed.
          '''
       if not node.elts:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '()' expression. A empty 'rule' is not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '()' expression. A empty 'rule' is not allowed.")
 
       self.transform_Name_to_Str(node.elts)
       return NotationASTTransformer.__parsed_rule
@@ -133,7 +146,8 @@ class NotationASTTransformer(NodeTransformer):
          Empty lists are not allowed.
          '''
       if not node.elts:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '[]' expression. A empty 'optional' is not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '[]' expression. A empty 'optional' is not allowed.")
 
       self.transform_Name_to_Str(node.elts)
       return NotationASTTransformer.__parsed_optional
@@ -191,7 +205,9 @@ class NotationASTTransformer(NodeTransformer):
          '''
 
       if isinstance(node.op, BitOr):
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '|' expression. The | operator must be between { }, in a 'choice' expression.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '|' expression. The | operator must be between { }, " 
+               "in a 'choice' expression.")
 
       return node
 
@@ -201,7 +217,9 @@ class NotationASTTransformer(NodeTransformer):
    
    def visit_UnaryOp(self, node):
       if not isinstance(node.op, Invert):
-         raise NotationASTTransformer.ParserASTError(node, "Invalid unary operator. The only operator valid is '~' to mark semantic actions.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid unary operator. The only operator valid is '~' " 
+               "to mark semantic actions.")
 
       node.operand._already_process = True
       return node.operand
@@ -215,11 +233,14 @@ class NotationASTTransformer(NodeTransformer):
          The expression can not be an empty {} or a singleton {a} choice.
          '''
       if not node.elts:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '{}' expression. A empty 'choices' is not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '{}' expression. A empty 'choices' is not allowed.")
       
       node.elts = self._split_set_elts(node.elts)
       if len(node.elts) == 1:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '{A}' expression. A 'choices' with only one alternative is not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '{A}' expression. A 'choices' with only one "
+               "alternative is not allowed.")
       
       self.transform_Name_to_Str(node.elts)
       return NotationASTTransformer.__parsed_choice
@@ -230,9 +251,11 @@ class NotationASTTransformer(NodeTransformer):
          '''
       if hasattr(node, '_already_process'): return node
       if not node.keys:
-         raise NotationASTTransformer.ParserASTError(node, "Invalid '{}' expression. A empty 'choices' is not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Invalid '{}' expression. A empty 'choices' is not allowed.")
       else:
-         raise NotationASTTransformer.ParserASTError(node, "Dict expressions '{A:b, C:d}' are not allowed.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Dict expressions '{A:b, C:d}' are not allowed.")
 
    
    @_visit_decorator
@@ -245,7 +268,9 @@ class NotationASTTransformer(NodeTransformer):
          Other 'subscript' like [1], [1:2] or [1:2:3] are not allowed.
          '''
       if not isinstance(node.slice, Ellipsis):
-         raise NotationASTTransformer.ParserASTError(node, "The only expression valid use the subscript '[...]'. Other subscripts are allowed. ")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "The only expression valid use the subscript '[...]'. "
+               "Other subscripts are allowed. ")
       
       if isinstance(node.value, Name):
          elts = [node.value]
@@ -272,11 +297,17 @@ class NotationASTTransformer(NodeTransformer):
          must be a valid name.
          '''
       if len(node.targets) != 1 or not isinstance(node.targets[0], Name):
-         raise NotationASTTransformer.ParserASTError(node, "Only one assign 'A = ...' is allowed and 'A' must be a variable with a valid name.")
+         raise NotationASTTransformer.ParserASTError(node, 
+               "Only one assign 'A = ...' is allowed and 'A' must be a "
+               "variable with a valid name.")
 
       # We allow 'Dict' to handle better error messages.
-      if not isinstance(node.value, (Tuple, List, Set, Name, Str, Subscript, Dict)):
-         raise NotationASTTransformer.ParserASTError(node, "The value to assign is invalid. The 'rule', 'optional', 'choices', 'repeated', a variable name and a literal string are allowes.")
+      if not isinstance(node.value, (Tuple, List, Set, 
+                                     Name, Str, Subscript, Dict)):
+         raise NotationASTTransformer.ParserASTError(node, 
+               "The value to assign is invalid. The 'rule', 'optional', "
+               "'choices', 'repeated', a variable name and a literal string "
+               "are allowes.")
 
       if isinstance(node.value, (Name, Str)):
          new_node = deepcopy(NotationASTTransformer.__parsed_tuple.body)
