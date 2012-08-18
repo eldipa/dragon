@@ -1,3 +1,4 @@
+'''See the documentation of the constructor of Syntax in this module.'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -21,9 +22,11 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.               #
 #                                                                             #
 ###############################################################################
-from grammar import Grammar
+from dragon.grammar import Grammar
 
 class Syntax(object):
+   '''See the __init__ method.'''
+
    def __init__(self, start_symbol, terminals = None):
       '''Creates the syntax of some language which grammar is defined
          by the calls to the methods of this class.
@@ -42,7 +45,8 @@ class Syntax(object):
 
       self._grammar = Grammar(start_symbol, terminals)
 
-   def _symbols(self, symbols, sym_production=None):
+   @staticmethod
+   def _symbols(symbols, sym_production=None):
       '''Utility to make 'symbols' a tuple, concatenated with 'sym_production'
          if it is not None.
          '''
