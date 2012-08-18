@@ -1,3 +1,4 @@
+'''See the documentation of the class NotationASTTransformer in this module.'''
 #########################################################################
 #                                                                       #
 #                        This work is licensed under a                  #
@@ -36,8 +37,8 @@ import mmap
 # pylint: disable=C0103
 # pylint: disable=R0201
 
-def _visit_decorator(visit_func):
-   def wrapper(self, node):
+def _visit_decorator(visit_func): # pylint: disable=C0111
+   def wrapper(self, node):       # pylint: disable=C0111
       if hasattr(node, '_already_process'): 
          self.generic_visit(node)
          return node
@@ -68,9 +69,16 @@ def _visit_decorator(visit_func):
 
 
 class NotationASTTransformer(NodeTransformer):
+   '''Processes a file with a syntaxis very similar to Python, parse it
+      with the module 'ast' and builds an AST tree. Then, it is modified
+      to transform it in a tree of calls to the Syntax class and build
+      a Grammar to be processed by the rest of the 'dragon' framework.
+      '''
    
    class ParserASTError(ParserError):
+      '''Exception raised when a error is found'''
       def __init__(self, node, argument):
+         '''Exception raised when a error is found'''
          ParserError.__init__(self, "(Line %i, Col %i) " % \
                            (node.lineno, node.col_offset) + argument)
    
@@ -89,22 +97,26 @@ class NotationASTTransformer(NodeTransformer):
    __parsed_tuple = parse("(1,)", __filename_parsed_expression, mode='eval')
 
    def __init__(self):
+      '''See the documentation of the class'''
       NodeTransformer.__init__(self)
       self._production_name = None
       self._hint_name = ""
       self._counter = 0
 
    def _generate_name(self):
+      '''Generates a dummy name for the additional rules that will appear.'''
       assert self._hint_name and "The 'hint name' must no be null."
       self._counter += 1
       return str(self._hint_name) + "#" + str(self._counter)
    
    def _last_generate_name(self):
+      '''The last generated dummy name.'''
       assert self._hint_name and "The 'hint name' must no be null."
       return str(self._hint_name) + "#" + str(self._counter)
 
    @staticmethod
    def get_notation_object_name():
+      '''Returns a reference to the 'Syntax' object.'''
       return NotationASTTransformer.__notation_object
 
    @_visit_decorator
@@ -122,6 +134,11 @@ class NotationASTTransformer(NodeTransformer):
       return NotationASTTransformer.__parsed_terminal
 
    def transform_Name_to_Str(self, elts):
+      '''Translates the Name objects to Str objects and if the id
+         of the object (the 'name') is in upper case, the object
+         is interpreted as a 'terminal' and the object will not be 
+         processed in other stage.
+         '''
       for node, i in zip(elts, range(len(elts))):
          if isinstance(node, Name):
             elts[i] = Str(node.id)
@@ -161,7 +178,7 @@ class NotationASTTransformer(NodeTransformer):
       return NotationASTTransformer.__parsed_optional
 
    @staticmethod
-   def _collapse(node):
+   def _collapse(node):       # pylint: disable=C0111
       if isinstance(node.left, BinOp) and isinstance(node.left.op, BitOr):
          left = NotationASTTransformer._collapse(node.left)
       else:
@@ -180,7 +197,7 @@ class NotationASTTransformer(NodeTransformer):
 
    
    @staticmethod
-   def _split_set_elts(elts):
+   def _split_set_elts(elts):       # pylint: disable=C0111
       collapsed = []
       for element in elts:
          if isinstance(element, BinOp) and isinstance(element.op, BitOr):
@@ -222,6 +239,14 @@ class NotationASTTransformer(NodeTransformer):
       return node
 
    def visit_UnaryOp(self, node):
+      '''Interprets a name as a external reference that can be evaluated
+         when the grammar is builded.
+         Let be ~foo or ~foo.bar, then, 'foo' and 'foo.bar' will be evaluated
+         when the grammar is builded.
+         Although any value can be referenced, only strings and callable
+         objects are useful (but this is not checked in this method).
+         '''
+
       if not isinstance(node.op, Invert):
          raise NotationASTTransformer.ParserASTError(node, 
                "Invalid unary operator. The only operator valid is '~' " 
@@ -336,6 +361,7 @@ class NotationASTTransformer(NodeTransformer):
 
 
 def _generate_grammar(ast_root, start_symbol, semantic_objets):
+   # pylint: disable=C0111
    transformer = NotationASTTransformer()
    root = transformer.visit(ast_root)
    
@@ -350,10 +376,12 @@ def _generate_grammar(ast_root, start_symbol, semantic_objets):
 
 
 def from_string(string, start_symbol, **semantic_objets):
+   '''See the documentation of the package 'notation'.'''
    root = parse(string)
    return _generate_grammar(root, start_symbol, semantic_objets)
 
 def from_file(filename, start_symbol, **semantic_objets):
+   '''See the documentation of the package 'notation'.'''
    with open(filename, 'r') as source:
       iomap = mmap.mmap(source.fileno(), length=0, access=mmap.ACCESS_READ)
       return from_string(iomap, start_symbol, **semantic_objets)
