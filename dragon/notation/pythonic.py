@@ -103,7 +103,8 @@ class NotationASTTransformer(NodeTransformer):
       assert self._hint_name and "The 'hint name' must no be null."
       return str(self._hint_name) + "#" + str(self._counter)
 
-   def get_notation_object_name(self):
+   @staticmethod
+   def get_notation_object_name():
       return NotationASTTransformer.__notation_object
 
    @_visit_decorator
@@ -159,14 +160,15 @@ class NotationASTTransformer(NodeTransformer):
       self.transform_Name_to_Str(node.elts)
       return NotationASTTransformer.__parsed_optional
 
-   def _collapse(self, node):
+   @staticmethod
+   def _collapse(node):
       if isinstance(node.left, BinOp) and isinstance(node.left.op, BitOr):
-         left = self._collapse(node.left)
+         left = NotationASTTransformer._collapse(node.left)
       else:
          left = [node.left]
       
       if isinstance(node.right, BinOp) and isinstance(node.right.op, BitOr):
-         right = self._collapse(node.right)
+         right = NotationASTTransformer._collapse(node.right)
       else:
          right = [node.right]
 
@@ -176,12 +178,13 @@ class NotationASTTransformer(NodeTransformer):
       result.extend(right)
       return result
 
-      
-   def _split_set_elts(self, elts):
+   
+   @staticmethod
+   def _split_set_elts(elts):
       collapsed = []
       for element in elts:
          if isinstance(element, BinOp) and isinstance(element.op, BitOr):
-            collapsed.extend(self._collapse(element))
+            collapsed.extend(NotationASTTransformer._collapse(element))
          else:
             collapsed.append(element)
 
@@ -218,10 +221,6 @@ class NotationASTTransformer(NodeTransformer):
 
       return node
 
-   def visit_Lambda(self, node):
-      node._already_process = True
-      return node
-   
    def visit_UnaryOp(self, node):
       if not isinstance(node.op, Invert):
          raise NotationASTTransformer.ParserASTError(node, 
