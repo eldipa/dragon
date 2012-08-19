@@ -114,7 +114,7 @@ class Driver(DriverInterface):
          if semantic_definition == None:
             self._count_stack_read = self._len_production
             self._consume = True
-            self._semantic_action = lambda args : args
+            self._semantic_action = lambda *args : args
          else:
             self._count_stack_read, self._consume, self._semantic_action = \
                                                             semantic_definition
@@ -131,7 +131,7 @@ class Driver(DriverInterface):
                goto_table[stack_of_states[-1]][self._sym_production]) #push
 
          new_attribute_synthesized = \
-               self._semantic_action(synthesized[-self._count_stack_read: ])
+               self._semantic_action(*synthesized[-self._count_stack_read: ])
 
          if self._consume:
             del synthesized[-self._count_stack_read: ] #multiple pops

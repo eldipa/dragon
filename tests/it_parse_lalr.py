@@ -49,30 +49,30 @@ class IntegralTestParseCalculatorForLALRGrammar(unittest.TestCase):
       self.symbol_table = dict()
       self.last_value = None
 
-      def set_var(args): 
-         self.symbol_table[args[0]] = args[2]; 
-         return self.symbol_table[args[0]]
+      def set_var(lv, X, rv): 
+         self.symbol_table[lv] = rv; 
+         return self.symbol_table[lv]
 
-      def get_var(args): 
-         if args[1] in self.symbol_table:
-            return self.symbol_table[args[1]]
+      def get_var(X, rv): 
+         if rv in self.symbol_table:
+            return self.symbol_table[rv]
          
-         raise KeyError(args[1])
+         raise KeyError(rv)
 
-      def grab_last_value(args):
-         self.last_value = args[0] if isinstance(args[0], int) else self.symbol_table[args[0]]
-         return args[0]
+      def grab_last_value(v):
+         self.last_value = v if isinstance(v, int) else self.symbol_table[v]
+         return v
 
       self.lrvalue.augment('S')
 
-      self.lrvalue.add_rule('S', ['E', ';', 'S',   lambda args: args[2]])
-      self.lrvalue.add_rule('S', ['E', ';',        lambda args: args[0]])
+      self.lrvalue.add_rule('S', ['E', ';', 'S',   lambda *args: args[2]])
+      self.lrvalue.add_rule('S', ['E', ';',        lambda *args: args[0]])
       self.lrvalue.add_rule('E', ['L', '=', 'R',   set_var])
       self.lrvalue.add_rule('E', ['R',             grab_last_value])
       self.lrvalue.add_rule('L', ['*', 'R',        get_var])
-      self.lrvalue.add_rule('L', ['id',            lambda args: args[0]])
-      self.lrvalue.add_rule('R', ['L',             lambda args: args[0]])
-      self.lrvalue.add_rule('R', ['num',           lambda args: args[0]])
+      self.lrvalue.add_rule('L', ['id',            lambda v: v])
+      self.lrvalue.add_rule('R', ['L',             lambda v: v])
+      self.lrvalue.add_rule('R', ['num',           lambda v: v])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table_lalr(self.lrvalue, LR0(self.lrvalue.START, 0, 0), False)
       self.driver = Driver(self.action_table, self.goto_table, self.start_state)
