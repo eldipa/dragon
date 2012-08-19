@@ -1,6 +1,6 @@
 import unittest
 import dragon.grammar as grammar
-from dragon.lr.builder import generate_spontaneously_lookaheads, propagate_lookaheads
+from dragon.lr.builder import generate_spontaneously_lookaheads, propagate_lookaheads, UserFriendlyMapping
 from dragon.lr.item import LR0
 
 class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
@@ -14,7 +14,7 @@ class FunctionalTestGotoTableForLALRGrammar(unittest.TestCase):
       
       self.StartExtendedSymbol = grammar.Grammar.START
       
-      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, LR0(self.lrvalue.START, 0, 0))
+      self.kernels_lalr, self.goto_table = generate_spontaneously_lookaheads(self.lrvalue, LR0(self.lrvalue.START, 0, 0), UserFriendlyMapping(False))
 
    def test_kernel_collection_lalr(self):
       collection = self.kernels_lalr
