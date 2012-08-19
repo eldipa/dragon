@@ -62,13 +62,13 @@ class Driver(object):
          The particular Driver implementation can include more specific
          data for even try to continue the parse.
          '''
-      def __init__(self, token_readed, expecteds):
+      def __init__(self, token_readed, expecteds, additional_msg=""):
          Exception.__init__(self)
          self.msg = "Unexpected token of type '%s' and value '%s'.\
-\nExpected {  %s  } types of tokens." % (
+\nExpected {  %s  } types of tokens.\n%s" % (
       token_readed[0], 
       token_readed[1], 
-      " ".join("'%s'" % e for e in expecteds))
+      " ".join("'%s'" % e for e in expecteds), additional_msg)
 
       def __str__(self):
          return self.msg

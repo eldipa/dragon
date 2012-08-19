@@ -262,4 +262,6 @@ class Grammar(object):
    def __str__(self):
       '''Return a string representing the grammar and each rule.'''
       return '\n'.join([
-         str(r) + " -> " + str(self[r]) for r in self.iter_nonterminals()])
+         str(r) + " -> " + \
+               str("\n  | ".join(map(lambda x: str(x)[1:-1], self[r]))) 
+               for r in self.iter_nonterminals()])
