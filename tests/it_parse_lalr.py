@@ -38,10 +38,10 @@ class IntegralTestParseCalculatorForLALRGrammar(unittest.TestCase):
                   yield ('id', match_var.group())
                   i = match_var.end()
                else:
-                  yield (line[i], line[i])
+                  yield (line[i], None)
                   i += 1
 
-         yield (grammar.Grammar.EOF, grammar.Grammar.EOF)
+         yield (grammar.Grammar.EOF, None)
          return 
 
    def setUp(self):
@@ -49,11 +49,11 @@ class IntegralTestParseCalculatorForLALRGrammar(unittest.TestCase):
       self.symbol_table = dict()
       self.last_value = None
 
-      def set_var(lv, X, rv): 
+      def set_var(lv, rv): 
          self.symbol_table[lv] = rv; 
          return self.symbol_table[lv]
 
-      def get_var(X, rv): 
+      def get_var(rv): 
          if rv in self.symbol_table:
             return self.symbol_table[rv]
          
@@ -65,8 +65,8 @@ class IntegralTestParseCalculatorForLALRGrammar(unittest.TestCase):
 
       self.lrvalue.augment('S')
 
-      self.lrvalue.add_rule('S', ['E', ';', 'S',   lambda *args: args[2]])
-      self.lrvalue.add_rule('S', ['E', ';',        lambda *args: args[0]])
+      self.lrvalue.add_rule('S', ['E', ';', 'S',   lambda e, s: s])
+      self.lrvalue.add_rule('S', ['E', ';',        lambda v: v])
       self.lrvalue.add_rule('E', ['L', '=', 'R',   set_var])
       self.lrvalue.add_rule('E', ['R',             grab_last_value])
       self.lrvalue.add_rule('L', ['*', 'R',        get_var])

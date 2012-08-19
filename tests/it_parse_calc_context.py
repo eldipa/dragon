@@ -36,15 +36,15 @@ class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
                   i = match_id.end()
                elif match_var:
                   if match_var.group() == 'let':
-                     yield ('let', 'let')
+                     yield ('let', None)
                   else:
                      yield ('var', match_var.group())
                   i = match_var.end()
                else:
-                  yield (line[i], line[i])
+                  yield (line[i], None)
                   i += 1
 
-         yield (grammar.Grammar.EOF, grammar.Grammar.EOF)
+         yield (grammar.Grammar.EOF, None)
          return 
 
 
@@ -54,10 +54,10 @@ class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
       self.result = None
 
       def get_result(x): self.result = x; return x
-      def add(x, X, y): t = x + y; return t
-      def mul(x, X, y): t = x * y; return t
+      def add(x, y): t = x + y; return t
+      def mul(x, y): t = x * y; return t
 
-      def set_var(lv, X, rv): self.symbol_table[-1][lv] = rv; return rv
+      def set_var(lv, rv): self.symbol_table[-1][lv] = rv; return rv
       def get_var(rv): 
          for table in reversed(self.symbol_table):
             if rv in table:
@@ -65,8 +65,8 @@ class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
          
          raise KeyError(rv)
 
-      def push(let): assert let == "let"; self.symbol_table.append(dict())
-      def pop(let, *others): assert let == "let"; self.symbol_table.pop()
+      def push(): self.symbol_table.append(dict());
+      def pop(*others): self.symbol_table.pop();
 
 
       self.arith.add_rule('S', ['E',                             get_result])
@@ -74,11 +74,11 @@ class IntegralTestParseCalculatorWithContexts(unittest.TestCase):
       self.arith.add_rule('E', ['T',                             lambda v: v])
       self.arith.add_rule('T', ['T', '*', 'F',                   mul])
       self.arith.add_rule('T', ['F',                             lambda v: v])
-      self.arith.add_rule('F', ['(', 'E', ')',                   lambda *args: args[1]])
+      self.arith.add_rule('F', ['(', 'E', ')',                   lambda v: v])
       self.arith.add_rule('F', ['id',                            lambda v: v])
       self.arith.add_rule('F', ['var', '=', 'E',                 set_var])
       self.arith.add_rule('F', ['var',                           get_var])
-      self.arith.add_rule('F', ['let', push, '(', 'E', ')', pop, lambda *args: args[3]])
+      self.arith.add_rule('F', ['let', push, '(', 'E', ')', pop, lambda v: v])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, LR0(self.arith.START, 0, 0))
       self.driver = Driver(self.action_table, self.goto_table, self.start_state)

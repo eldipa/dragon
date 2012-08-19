@@ -131,7 +131,8 @@ class Driver(DriverInterface):
                goto_table[stack_of_states[-1]][self._sym_production]) #push
 
          new_attribute_synthesized = \
-               self._semantic_action(*synthesized[-self._count_stack_read: ])
+               self._semantic_action(*filter(lambda x: x is not None, 
+                                    synthesized[-self._count_stack_read: ]))
 
          if self._consume:
             del synthesized[-self._count_stack_read: ] #multiple pops

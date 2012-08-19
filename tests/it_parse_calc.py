@@ -33,10 +33,10 @@ class IntegralTestParseCalculator(unittest.TestCase):
                   yield ('id', int(match.group()))
                   i = match.end()
                else:
-                  yield (line[i], line[i])
+                  yield (line[i], None)
                   i += 1
 
-         yield (grammar.Grammar.EOF, grammar.Grammar.EOF)
+         yield (grammar.Grammar.EOF, None)
          return 
 
 
@@ -45,15 +45,15 @@ class IntegralTestParseCalculator(unittest.TestCase):
       self.result = None
 
       def get_result(v): self.result = v; return v
-      def add(x, X, y): t = x + y; return t
-      def mul(x, X, y): t = x * y; return t
+      def add(x, y): t = x + y; return t
+      def mul(x, y): t = x * y; return t
 
       self.arith.add_rule('S', ['E',           get_result])
       self.arith.add_rule('E', ['E', '+', 'T', add])
       self.arith.add_rule('E', ['T',           lambda v: v])
       self.arith.add_rule('T', ['T', '*', 'F', mul])
       self.arith.add_rule('T', ['F',           lambda v: v])
-      self.arith.add_rule('F', ['(', 'E', ')', lambda *args: args[1]])
+      self.arith.add_rule('F', ['(', 'E', ')', lambda v: v])
       self.arith.add_rule('F', ['id',          lambda v: v])
 
       self.action_table, self.goto_table, self.start_state = build_parsing_table(self.arith, LR0(self.arith.START, 0, 0))
