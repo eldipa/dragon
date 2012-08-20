@@ -90,7 +90,7 @@ class Syntax(object):
  
    
    def repeat(self, symbols, production_name):
-      '''Adds a high level rule which derivates in "zero or more" times
+      '''Adds a high level rule which derivates in "one or more" times
          the 'production_name' symbol.'''
       self._grammar.add_rule(production_name, 
                                     self._symbols(symbols, production_name))
