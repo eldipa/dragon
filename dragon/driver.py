@@ -42,8 +42,11 @@ class Driver(object):
    def parse(self, lexer):
       '''This will extract tokens from the lexer and try to parse the input.
          The lexer must implement the Lexer interface.'''
-      raise NotImplementedError
+      for _dummy in self.parse_by_step(lexer):
+         pass
 
+   def parse_by_step(self, lexer):
+      raise NotImplementedError
 
    class UnexpectedToken(Exception):
       '''This exception will be raised by the Driver when an unexpected 

@@ -46,7 +46,7 @@ class Driver(DriverInterface):
       self._goto_table = goto_table
       self._start_state = start_state
 
-   def parse(self, lexer):
+   def parse_by_step(self, lexer):
       stack_of_states = [self._start_state]
       synthesized = []
       finish = False
@@ -65,6 +65,8 @@ class Driver(DriverInterface):
             action.eval(stack_of_states, self._goto_table, synthesized)
             request_token = action.request_token()
             finish = action.finish()
+            yield token, action, stack_of_states, request_token
+                  
 
          if finish:
             break
@@ -114,7 +116,7 @@ class Driver(DriverInterface):
          if semantic_definition == None:
             self._count_stack_read = self._len_production
             self._consume = True
-            self._semantic_action = lambda *args : args
+            self._semantic_action = lambda *args : args[0] if args else None
          else:
             self._count_stack_read, self._consume, self._semantic_action = \
                                                             semantic_definition
