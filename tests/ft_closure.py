@@ -90,7 +90,7 @@ class FunctionalTestClosure(unittest.TestCase):
             LR0('L', 0, 0), LR0('L', 1, 0)])
       
       a2 = set([
-            LR0(self.lrvalue_with_actions.ACTION_INSIDE % 3, 0, 0), 
+            LR0(self.lrvalue_with_actions.ACTION_INSIDE % (3, '<lambda>'), 0, 0), 
             LR0('R', 0, 0), LR0('R', 1, 0), LR0('R', 1, 1),
             LR0('L', 0, 0), LR0('L', 0, 1), LR0('L', 1, 0)])
 

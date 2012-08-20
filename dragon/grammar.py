@@ -39,7 +39,7 @@ class Grammar(object):
    EMPTY = "<<e>>"
    START = "<<S>>"
    EOF = "<<$>>"
-   ACTION_INSIDE = "<<@%i>>"
+   ACTION_INSIDE = "<<@%i %s>>"
    PROBE = "<<#>>"
 
    def __init__(self, start_symbol = None, terminals = None):
@@ -91,11 +91,11 @@ class Grammar(object):
          self._semantic[key] = (count, consume, semantic_action)
    
    # pylint: disable=C0103
-   def _generate_symbol_for_semantic_action_inside(self): 
+   def _generate_symbol_for_semantic_action_inside(self, semantic): 
       '''Makes a unique name used by the artificial symbols of semantic 
          actions in the middle of a production.'''
       self._counter_generator += 1
-      return self.ACTION_INSIDE % self._counter_generator
+      return self.ACTION_INSIDE % (self._counter_generator, semantic.__name__)
          
    def add_terminal(self, terminal):
       '''Adds a terminal.'''
@@ -136,7 +136,8 @@ class Grammar(object):
          if hasattr(rule[i], '__call__'):
             assert not (i == 0) and "The first must not be a semantic action."
             __semantic_action = rule[i]
-            rule[i] = self._generate_symbol_for_semantic_action_inside()
+            rule[i] = self._generate_symbol_for_semantic_action_inside(
+                                                         __semantic_action)
             self._productions[rule[i]].append((Grammar.EMPTY,))
             self._assign_semantic_action(rule[i], __semantic_action, i, False)
 

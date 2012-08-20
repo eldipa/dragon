@@ -93,7 +93,7 @@ class Driver(DriverInterface):
       def finish(cls): 
          return False
       def __str__(self): 
-         return "Shift %s" % hex(self._state_to_shift)
+         return "Shift %s" % self._state_to_shift
       def __ne__(self, other): 
          return not self == other
 
@@ -148,7 +148,7 @@ class Driver(DriverInterface):
       def finish(cls): 
          return False
       def __str__(self): 
-         return "Reduce %s, %i pops" % (self._sym_production, 
+         return "Reduce %s, %i parameters" % (self._sym_production, 
                                         self._len_production)
       def __ne__(self, other): 
          return not self == other

@@ -84,7 +84,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       frozenset([
          LR0('E', 1, 1), 
-         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]),
+         LR0(self.arith.ACTION_INSIDE % (1, 'push'), 0, 0),]),
       
       frozenset([
          LR0('E', 1, 2),]),
@@ -97,7 +97,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       frozenset([
          LR0('E', 1, 5), 
-         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]),
+         LR0(self.arith.ACTION_INSIDE % (2, 'pop'), 0, 0),]),
 
       frozenset([
          LR0('E', 1, 3), 
@@ -125,7 +125,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       (frozenset([
          LR0('E', 1, 1), 
-         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]),  ((self.arith.ACTION_INSIDE % 1, 5),)),
+         LR0(self.arith.ACTION_INSIDE % (1, 'push'), 0, 0),]),  ((self.arith.ACTION_INSIDE % (1, 'push'), 5),)),
       
       (frozenset([
          LR0('E', 1, 2),]),  (('(', 9),)),
@@ -138,7 +138,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       (frozenset([
          LR0('E', 1, 5), 
-         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]), ((self.arith.ACTION_INSIDE % 2, 7),) ),
+         LR0(self.arith.ACTION_INSIDE % (2, 'pop'), 0, 0),]), ((self.arith.ACTION_INSIDE % (2, 'pop'), 7),) ),
 
       (frozenset([
          LR0('E', 1, 3), 
@@ -182,7 +182,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       (frozenset([
          LR0('E', 1, 1), 
-         LR0(self.arith.ACTION_INSIDE % 1, 0, 0),]), (), () ),
+         LR0(self.arith.ACTION_INSIDE % (1, 'push'), 0, 0),]), (), () ),
       
       (frozenset([
          LR0('E', 1, 2),]), (('(', 9),), () ),
@@ -195,7 +195,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
       
       (frozenset([
          LR0('E', 1, 5), 
-         LR0(self.arith.ACTION_INSIDE % 2, 0, 0),]), (), () ),
+         LR0(self.arith.ACTION_INSIDE % (2, 'pop'), 0, 0),]), (), () ),
 
       (frozenset([
          LR0('E', 1, 3), 
@@ -212,7 +212,7 @@ class RegressionTestUnknowGotoState(unittest.TestCase):
          if not shifts:
             continue
          keys, ids = zip(*shifts)
-         found_ids = [i for i in range(len(states_shifts_reduce_actions)) if ("Shift %s" % hex(hash(states_shifts_reduce_actions[i][0]))) in map(lambda a: str(a), self.action_table[h].values())]
+         found_ids = [i for i in range(len(states_shifts_reduce_actions)) if ("Shift %s" % hash(states_shifts_reduce_actions[i][0])) in map(lambda a: str(a), self.action_table[h].values())]
          found_keys = self.action_table[h].keys()
 
          self.assertTrue(frozenset(ids) == frozenset(found_ids))
