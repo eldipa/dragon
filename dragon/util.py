@@ -134,7 +134,7 @@ def follow(a_grammar, symbol, _seen = None):
    for sym in a_grammar.iter_nonterminals():
       if not a_grammar.is_augmented_start_symbol(sym):
          for rule in a_grammar[sym]:
-            if target in rule:
+            while target in rule:
                tail = rule[rule.index(target) + 1: ]
                
                terminals = ()
@@ -148,6 +148,7 @@ def follow(a_grammar, symbol, _seen = None):
 
                follow_set.update(more_terminals)
                follow_set.update(set(terminals) - set([a_grammar.EMPTY]))
+               rule = rule[rule.index(target)+1 :]
    
    assert a_grammar.EMPTY not in follow_set
    return frozenset(follow_set)

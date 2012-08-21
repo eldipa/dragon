@@ -46,6 +46,13 @@ class Driver(object):
          pass
 
    def parse_by_step(self, lexer):
+      '''This will extract tokens from the lexer and try to parse the input.
+         The lexer must implement the Lexer interface.
+         
+         The implementation must be a generator, so the parse process is
+         realized step by step. 
+         The objects yielded in each iteration is defined by the implementer.
+         '''
       raise NotImplementedError
 
    class UnexpectedToken(Exception):
