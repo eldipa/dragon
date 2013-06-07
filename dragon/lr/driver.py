@@ -72,7 +72,14 @@ class Driver(DriverInterface):
             break
  
          synthesized.append(token[1])
-
+   
+   def debug_parse(self, lexer):
+      ''' Like the method parse, but in this case, the token read, the action
+          of the driver and the states of him will be printed to stdout.
+          Only for debugging.
+          '''
+      for token, action, states, request_token in self.parse_by_step(lexer):
+         print "{0:20} {3:4} {1:20}<-{2}".format(token, states, action, request_token)
 
    class Shift(object):
       # pylint: disable=C0111
