@@ -5,7 +5,7 @@ if __name__ == '__main__':
    if sys.argv[1:]:
       patterns = sys.argv[1:]
    else:
-      patterns = ['test*.py', 'ft_*.py', 'it_*.py', 'rt_*.py', 'qa_*.py']
+      patterns = ['test*.py', 'ft_*.py', 'it_*.py', 'rt_*.py']
    
    start_dir_tests = './tests'
    loader = TestLoader()
